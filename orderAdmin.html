@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>订单管理</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+		<!-- 引入bootstrap基础样式 -->
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+
+		<!-- 引入字体样式 -->
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+
+		<!-- 引入自定义的样式表 -->
+		<link rel="stylesheet" href="css/main.css" />
+
+		<!-- 引入adminlte的基础样式 -->
+		<link rel="stylesheet" href="css/AdminLTE.css" />
+
+		<!-- 日历控件 -->
+		<link rel="stylesheet" href="css/simple-calendar.css" />
+
+		<!-- 分页插件 -->
+		<link rel="stylesheet" href="css/page.css" />
+
+		<!-- 引入兼容IE8的两个js文件 -->
+		<!--[if lt IE 9]>
+  		<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  		<![endif]-->
+
+	</head>
+
+	<body>		
+		<div class="hold">
+			<div class="row primaryStyle">
+				<div class="col-lg-7 col-md-7">
+					<!-- 订单状态分布条形图 -->
+					<div id="order-admin">
+					</div>
+				</div>
+				<div class="col-lg-1 col-md-1"></div>
+				<div class="col-lg-3 col-md-4">
+					<br />
+					<!-- 日历控件 -->
+					<div id="calendar">
+					</div>
+				</div>
+			</div>
+			<br />
+			<div class="row primaryStyle">
+				<form>
+					<div class="col-md-2 col-sm-4 col-xs-6">
+						<input type="text" class="form-control my-control" placeholder="订单编号" id="order-number" />
+					</div>
+					<div class="col-md-2 col-sm-4 col-xs-6 show-or-hide1" hidden="hidden">
+						<select class="form-control my-control" id="order-company">
+							<option value="">所属公司</option>
+							<option value="400">广东立升科技有限公司</option>
+							<option value="401">广东维信智联科技有限公司</option>
+							<option value="402">东莞市新先颖办公设备有限公司</option>
+							<option value="403">广东文一朝阳集团有限公司</option>
+							<option value="404">东莞市华南信息科技有限公司</option>
+						</select>
+					</div>
+					<div class="col-md-2 col-sm-4 col-xs-6">
+						<select class="form-control my-control" id="order-type">
+							<option value="">订单状态</option>
+							<option value="1">待接单</option>
+							<option value="2">已接单</option>
+							<option value="3">处理中</option>
+							<option value="4">分级待用户确认</option>
+							<option value="5">分级待对方确认</option>
+							<option value="6">已报价待确认</option>
+							<option value="7">已挂起</option>
+							<option value="8">已完成待确认</option>
+							<option value="9">拒绝并返修</option>
+							<option value="10">拒绝返修</option>
+							<option value="11">已完成</option>
+							<option value="12">已评价</option>
+							<option value="20">已取消</option>
+							<option value="21">售后</option>
+						</select>
+					</div>
+					<div class="col-md-2 col-sm-4 col-xs-6">
+						<input type="date" class="form-control my-control" placeholder="起始时间" id="start-time">
+					</div>
+					<div class="col-md-2 col-sm-4 col-xs-6">
+						<input type="date" class="form-control my-control" placeholder="结束时间" id="end-time">
+					</div>
+					<div class="col-md-2 col-sm-4 col-xs-6">
+						<input type="button" class="btn my-btn" value="搜索" id="search-btn" />
+					</div>
+				</form>
+			</div>
+			<br />
+			<div class="row primaryStyle">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td><b>订单编号</b></td>
+								<td><b>订单状态</b></td>
+								<td><b>下单单位</b></td>
+								<td><b>下单人</b></td>
+								<td><b>接单单位</b></td>
+								<td><b>接单人</b></td>
+								<td><b>状态</b></td>
+								<td><b>下单时间</b></td>
+								<td><b>认证</b></td>
+								<td><b>操作</b></td>
+							</tr>
+						</thead>
+						<tbody id="response-data">
+						</tbody>
+						<div class="modal fade" id="primaryModal">
+							<div class="modal-dialog">
+								<div class="modal-content">
+									<div class="modal-header">
+										<button type="button" class="close" data-dismiss="modal">&times;</button>
+										<h4 class="modal-title" id="modal-title"></h4>
+									</div>
+									<div class="modal-body" id="modal-body">
+									</div>
+									<div class="modal-footer" id="modal-footer">
+										<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+									</div>
+								</div>
+							</div>
+						</div>
+					</table>
+				</div>
+			</div>
+			<div class="row specialStyle">
+				<div class="col-md-7 col-sm-7 col-xs-12">
+					<div id="pages" class="pull-right">
+
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="col-md-1 col-sm-2 col-xs-6">
+					<input type="text" id="input-page" class="form-control my-control" style="background-color: white; margin-top: 0.8rem;" placeholder="页码">
+				</div>
+				<div class="col-md-3 col-sm-3 col-xs-6">
+					<input type="button" id="input-button" class="btn my-btn" value="跳转" style="margin-top: 0.8rem;" />
+				</div>
+			</div>
+		</div>
+
+		<!-- 引入jquery函数库 -->
+		<script src="js/vendor/jquery.min.js"></script>
+
+		<!-- 引入bootstrap基础插件 -->
+		<script src="js/bootstrap.min.js"></script>
+
+		<!-- 引入highcharts插件 -->
+		<script src="js/highcharts/highcharts.js"></script>
+		<script src="js/highcharts/map.js"></script>
+		<script src="js/highcharts/exporting.js"></script>
+		<script src="js/highcharts/highcharts-zh_CN.js"></script>
+
+		<!-- 日历控件 -->
+		<script type="text/javascript" src="js/simple-calendar.js"></script>
+
+		<!-- 分页插件 -->
+		<script src="js/pagination.js"></script>
+
+		<script src="js/orderAdmin.js"></script>
+	</body>
+
+</html>

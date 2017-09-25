@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html class="html">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+		<title>用户登录</title>
+		<!-- 引入bootstrap基础样式 -->
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+
+		<!-- 引入字体样式 -->
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+
+		<!-- 引入adminlte的基础样式 -->
+		<link rel="stylesheet" href="css/AdminLTE.css" />
+		<style>
+			@media (min-width:1440px) {
+				.html {
+					font-size: 16px;
+				}
+			}
+			
+			@media (max-width:1440px) {
+				.html {
+					font-size: 12px;
+				}
+			}
+			
+			.html {
+				width: 100%;
+				height: 100%;
+			}
+			
+			body {
+				position: relative;
+				width: 100%;
+				height: 100%;
+				background-image: url(img/login_bg.jpg);
+				background-repeat: no-repeat;
+				background-size: 100% 100%;
+				overflow: hidden;
+			}
+			
+			.login-main {
+				width: 28rem;
+				height: 35rem;
+				background-color: rgba(0, 0, 0, 0.28);
+				position: absolute;
+				top: 50%;
+				right: 10%;
+				transform: translate(0, -50%);
+				-ms-transform: translate(0, -50%);
+				border-radius: 5px;
+			}
+			
+			.theLogo {
+				position: absolute;
+				left: 50%;
+				width: 17rem;
+				transform: translate(-50%, 0);
+				-ms-transform: translate(-50%, 0);
+			}
+			
+			.phone {
+				position: absolute;
+				top: 14rem;
+				left: 50%;
+				transform: translate(-50%, 0);
+				-ms-transform: translate(-50%, 0);
+				width: 24rem;
+				height: 4rem;
+				border-radius: 50px;
+				outline: none;
+				border: 1px solid white;
+				font-size: 1.3rem;
+				padding-left: 20px;
+				color: white;
+				background-color: transparent;
+			}
+			
+			.code {
+				position: absolute;
+				top: 20rem;
+				left: 50%;
+				transform: translate(-50%, 0);
+				-ms-transform: translate(-50%, 0);
+				width: 24rem;
+				height: 4rem;
+				border-radius: 50px;
+				outline: none;
+				border: 1px solid white;
+				font-size: 1.3rem;
+				padding-left: 20px;
+				color: white;
+				background-color: transparent;
+			}
+			
+			.getCode {
+				position: absolute;
+				top: 20.5rem;
+				right: 2.5rem;
+				width: 8rem;
+				height: 3rem;
+				border-radius: 50px;
+				outline: none;
+				font-size: 1rem;
+				color: #8693F3;
+				background-color: rgba(134, 147, 243, 0.14);
+				border: 2px solid #8693F3;
+				z-index: 9999;
+			}
+			
+			.loginButton {
+				position: absolute;
+				top: 26rem;
+				left: 50%;
+				transform: translate(-50%, 0);
+				-ms-transform: translate(-50%, 0);
+				width: 24rem;
+				height: 4rem;
+				border-radius: 50px;
+				outline: none;
+				font-size: 1.3rem;
+				background-color: #8693F3;
+				color: white;
+				border: none;
+			}
+			
+			.foot {
+				height: 30px;
+				line-height: 30px;
+				text-align: center;
+				width: 100%;
+				background: #4f4f4f;
+				color: #fff;
+				position: fixed;
+				bottom: 0px;
+			}
+			
+			.the-alert-div {
+				position: fixed;
+				top: 100px;
+				left: 50%;
+				z-index: 9999;
+				transform: translate(-50%, 0);
+				-webkit-transform: translate(-50%, 0);
+				-o-transform: translate(-50%, 0);
+				-moz-transform: translate(-50%, 0);
+				-ms-transform: translate(-50%, 0);
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="container the-alert-div">
+			<div class="alert alert-danger hidden">
+			</div>
+		</div>
+
+		<div class="login-main">
+			<img src="img/login_logo.png" class="theLogo" />
+			<form>
+				<input class="phone" type="text" id="phone" name="phone" placeholder="手机号">
+				<input class="code" type="text" name="code" placeholder="验证码" onkeyup="value=value.replace(/[^\d]/g,'')">
+				<input type="button" class="getCode" value="获取验证码" id="btn" onclick="return send(this)">
+				<input type="button" class="loginButton" value="登录" onclick="return submitCode()">
+			</form>
+		</div>
+		<div class="foot">
+			Copyright 2015 广东立升科技有限公司版权所有
+			<a style="color: #ffffff;" target="_blank" href="http://www.miitbeian.gov.cn/">备案号：粤ICP备16004815号-2</a>
+		</div>
+
+		<script src="js/vendor/jquery.min.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<script src="js/login.js"></script>
+	</body>
+
+</html>

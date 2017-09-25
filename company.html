@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>服务单位类型管理</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+		<!-- 引入bootstrap基础样式 -->
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+
+		<!-- 引入字体样式 -->
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+
+		<!-- 引入自定义的样式表 -->
+		<link rel="stylesheet" href="css/main.css" />
+
+		<!-- 分页插件 -->
+		<link rel="stylesheet" href="css/page.css" />
+
+		<!-- 引入兼容IE8的两个js文件 -->
+		<!--[if lt IE 9]>
+  		<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  		<![endif]-->
+
+	</head>
+
+	<body>
+		<div class="hold">
+			<div class="row primaryStyle">
+				<div class="col-md-2 col-lg-2 col-sm-2">
+					<input type="text" class="form-control my-control" placeholder="公司名称" id="search-input" />
+				</div>
+				<div class="col-md-1 col-lg-1 col-sm-2">
+					<label class="control-label"><span style="line-height: 3.3rem;">所属地区</span></label>
+				</div>
+				<div class="col-md-2 col-lg-1 col-sm-2">
+					<select class="my-control form-control" id="search-province">
+						<option value="">选择省</option>
+					</select>
+				</div>
+				<div class="col-md-2 col-lg-1 col-sm-2">
+					<select class="my-control form-control" id="search-city">
+						<option value="">选择市</option>
+					</select>
+				</div>
+				<div class="col-md-2 col-lg-1 col-sm-2">
+					<select class="my-control form-control" id="search-count">
+						<option value="">选择区</option>
+					</select>
+				</div>
+				<div class="col-md-2 col-lg-1 col-sm-2">
+					<input type="button" class="btn my-btn" value="搜索" id="search-btn" />
+				</div>
+			</div>
+			<div class="row specialStyle">
+				<button class="btn special-btn" id="back" title="后退"><i class="fa fa-arrow-left"></i></button>
+				<button class="btn special-btn" id="edit" title="编辑"><i class="fa fa-edit"></i></button>
+				<button class="btn special-btn" id="ban" title="禁用"><i class="fa fa-ban"></i></button>
+				<button class="btn special-btn" id="unban" title="启用"><i class="fa fa-check"></i></button>
+				<button class="btn special-btn" id="plus" title="添加公司"><i class="fa fa-plus"></i></button>
+				<button class="btn special-btn" id="delete" title="删除"><i class="fa fa-trash-o"></i></button>
+			</div>
+			<div class="modal fade" id="primaryModal">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal">&times;</button>
+							<h4 class="modal-title" id="modal-title"></h4>
+						</div>
+						<div class="modal-body" id="modal-body">
+						</div>
+						<div class="modal-footer" id="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row primaryStyle">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<td><input type="checkbox" id="select-all"><label class="labelFC" for="select-all"></label></td>
+								<td><b>序号</b></td>
+								<td><b>单位名称</b></td>
+								<td><b>联系方式</b></td>
+								<td><b>所属地区</b></td>
+								<td><b>地点</b></td>
+								<td><b>公司法人</b></td>
+								<td><b>状态</b></td>
+								<td><b>创建时间</b></td>
+								<td><b>操作</b></td>
+							</tr>
+						</thead>
+						<tbody id="company-list">
+
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row specialStyle">
+				<div class="col-md-7 col-sm-7 col-xs-12">
+					<div id="pages2" class="pull-right">
+
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="col-md-1 col-sm-2 col-xs-6">
+					<input type="text" id="input-page" class="form-control my-control" style="background-color: white; margin-top: 0.8rem;" placeholder="页码">
+				</div>
+				<div class="col-md-3 col-sm-3 col-xs-6">
+					<input type="button" id="input-button" class="btn my-btn" value="跳转" style="margin-top: 0.8rem;" />
+				</div>
+			</div>
+		</div>
+		<!-- 引入jquery函数库 -->
+		<script src="js/vendor/jquery.min.js"></script>
+
+		<!-- 引入bootstrap基础插件 -->
+		<script src="js/bootstrap.min.js"></script>
+
+		<!-- 分页插件 -->
+		<script src="js/pagination.js"></script>
+
+		<script src="js/company.js"></script>
+	</body>
+
+</html>

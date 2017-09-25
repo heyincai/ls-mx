@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>维修员管理</title>
+		<meta charset="UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+
+		<!-- 引入bootstrap基础样式 -->
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+
+		<!-- 引入字体样式 -->
+		<link rel="stylesheet" href="css/font-awesome.min.css">
+
+		<!-- 引入自定义的样式表 -->
+		<link rel="stylesheet" href="css/main.css" />
+
+		<!-- 分页插件 -->
+		<link rel="stylesheet" href="css/page.css" />
+
+		<!-- 引入兼容IE8的两个js文件 -->
+		<!--[if lt IE 9]>
+  		<script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+  		<script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+  		<![endif]-->
+
+	</head>
+
+	<body>
+		<div class="hold">
+			<div class="row primaryStyle headBar">
+				<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2">
+					<input type="text" class="form-control my-control" id="eAdmin-input-key" value="" placeholder="搜索关键字" />
+				</div>
+				<div class="col-xs-2 col-sm-1 col-md-1 col-lg-1">
+					<label class="control-label"><span style="line-height: 3.3rem;">维修级别</span></label>
+				</div>
+				<div class="col-xs-2 col-md-2 col-lg-2">
+					<select class="my-control form-control" id="eAdmin-select-fixLevel">
+						<option value="">请选择</option>
+						<option value="0">普通维修员</option>
+						<option value="1">认证维修员</option>
+						<option value="2">申请认证中</option>
+					</select>
+				</div>
+				<div class="col-xs-2 col-sm-1 col-md-1 col-lg-1">
+					<label class="control-label"><span style="line-height: 3.3rem;">公司名称</span></label>
+				</div>
+				<div class="col-xs-2 col-sm-2 col-md-2 col-lg-2" id="eAdmin-select-company-container">
+					<select class="my-control form-control" id="eAdmin-select-company">
+						<option value="">所属公司</option>
+					</select>
+				</div>
+				<div class="col-xs-2 col-sm-2 col-md-2 col-lg-1">
+					<input type="button" class="btn my-btn" value="搜索" onclick="eAdmin_search()" />
+				</div>
+			</div>
+			<div class="row specialStyle">
+				<button class="btn special-btn" title="后退" onclick="refreshList()"><i class="fa fa-arrow-left"></i></button>
+				<button class="btn special-btn" title="修改" onclick="editItem()"><i class="fa fa-edit"></i></button>
+				<button class="btn special-btn" title="禁用" onclick="banOrStarteItem(0)"><i class="fa fa-ban"></i></button>
+				<button class="btn special-btn" title="启用" onclick="banOrStarteItem(1)"><i class="fa fa-check"></i></button>
+				<button class="btn special-btn" title="添加" onclick="addItem()"><i class="fa fa-plus"></i></button>
+				<button class="btn special-btn" title="添加" onclick="addEngineer()"><i class="fa fa-plus"></i></button>
+				<button class="btn special-btn" title="删除" onclick="deleteItem()"><i class="fa fa-trash-o"></i></button>
+				<button class="btn special-btn" title="刷新" onclick="refreshList()"><i class="fa fa-refresh"></i></button>
+			</div>
+			<div class="row primaryStyle">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<thead>
+						</thead>
+						<tbody>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div class="row specialStyle" id="eAdmin-pagesContainer">
+				<div class="col-md-7 col-sm-7 col-xs-12">
+					<div id="pages2" class="pull-right">
+
+					</div>
+					<div class="clearfix"></div>
+				</div>
+				<div class="col-md-1 col-sm-2 col-xs-6">
+					<input type="text" id="eAdmin-input-page" class="form-control my-control" style="background-color: white; margin-top: 0.8rem;" placeholder="页码">
+				</div>
+				<div class="col-md-3 col-sm-3 col-xs-6">
+					<input type="button" class="btn my-btn" value="跳转" onclick="jumpTo()" style="margin-top: 0.8rem;" />
+				</div>
+			</div>
+			
+			<div class="modal fade" id="primaryModal">
+				<div class="modal-dialog" style="width: 30rem;">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"></button>
+							<h4 class="modal-title" id="modal-title"></h4>
+						</div>
+						<div class="modal-body" id="modal-body">
+						</div>
+					</div>
+				</div>
+			</div>
+			
+			<!--个人信息模态框-->
+			<div class="modal fade" id="eAdmin-Modal">
+				<div class="modal-dialog" style="width: 70rem;">
+					<div class="modal-content">
+						<div class="modal-header" style="background-color: rgb(71,135,249);text-align: center;color:white;">
+							<button type="button" class="close" data-dismiss="modal">&times</button>
+							<h4 class="modal-title">个人信息</h4>
+						</div>
+						<div class="modal-body" style="padding: 3rem 3rem 3rem 6rem;">
+							<div class="row">
+								<div class="col-lg-2 col-md-2 col-sm-2 col-xs-2">
+									<br />
+									<img id="eAdmin-info-picture" src="./img/defultPicture.png" style="width: 100%;" />
+								</div>
+								<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5" style="padding-left: 1.5rem;">
+									<h3 id="eAdmin-info-realname"></h3>
+									<span class="eAdmin-info-span">联系电话</span><span id="eAdmin-info-phone"></span><br /><br />
+									<span class="eAdmin-info-span">身份证号</span><span id="eAdmin-info-idCard"></span><br /><br />
+									<span class="eAdmin-info-span">是否在线</span><span id="eAdmin-info-isLive"></span><br /><br />
+									<span class="eAdmin-info-span">最近登录时间</span><span id="eAdmin-info-lastlogintime"></span><br /><br />
+								</div>
+								<div class="col-lg-5 col-md-5 col-sm-5 col-xs-5">
+									<br /><br /><br />
+									<span class="eAdmin-info-span">公司名称</span><span id="eAdmin-info-companyname"></span><br /><br />
+									<span class="eAdmin-info-span">是否认证</span><span id="eAdmin-info-is_secrecy"></span><br /><br />
+									<span class="eAdmin-info-span">创建时间</span><span id="eAdmin-info-createtime"></span><br /><br />
+								</div>
+							</div>
+							<div class="row" id="eAdmin-btnRow" style="text-align: center;color: white;">
+								<br /><br />
+								<button class="btn btn-primary" style="margin-right: 2rem;" onclick="Auditing(1)">同意</button>
+								<button class="btn btn-default" onclick="Auditing(0)">拒绝</button>
+							</div>
+
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+		<!-- 引入jquery函数库 -->
+		<script src="js/vendor/jquery.min.js"></script>
+
+		<!-- 引入bootstrap基础插件 -->
+		<script src="js/bootstrap.min.js"></script>
+
+		<!-- 分页插件 -->
+		<script src="js/pagination.js"></script>
+
+		<script src="js/engineerAdmin.js"></script>
+	</body>
+
+</html>
