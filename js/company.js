@@ -9,6 +9,7 @@ var total_pages;
 $(document).ready(function() {
 	index();
 });
+
 //获取公司列表并分页（服务公司和子服务公司通用）
 function index() {
 	$.ajax({
