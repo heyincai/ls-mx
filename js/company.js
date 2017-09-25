@@ -230,34 +230,34 @@ $('#input-button').click(function() {
 function primart_request(msg) {
 	$('#company-list').html('');
 
-	for(var i = 0; i < msg.data.list.length; i++) {
+	for(var i = 0; i < msg.data.data.length; i++) {
 		$('#company-list').append('<tr>' +
-			'<td><input type="checkbox" class="val" value="' + msg.data.list[i].cid + ',' + msg.data.list[i].parent_cid + '" id="' + msg.data.list[i].cid + '">' +
-			'<label class="labelFC" for="' + (msg.data.list[i].cid ? msg.data.list[i].cid : '') + '"></label></td>' +
-			'<td>' + (msg.data.list[i].cid ? msg.data.list[i].cid : '') + '</td>' +
-			'<td>' + (msg.data.list[i].companyname ? msg.data.list[i].companyname : '') + '</td>' +
-			'<td>' + (msg.data.list[i].phone ? msg.data.list[i].phone : '') + '</td>' +
-			'<td>' + (msg.data.list[i].regionName ? msg.data.list[i].regionName : '') + '</td>' +
-			'<td>' + (msg.data.list[i].address ? msg.data.list[i].address : '') + '</td>' +
-			'<td>' + (msg.data.list[i].companyowner ? msg.data.list[i].companyowner : '') + '</td>' +
-			'<td class="' + (msg.data.list[i].status ? 'black' : 'red') + '">' + (msg.data.list[i].status ? '正常' : '停用') + '</td>' +
-			'<td>' + (msg.data.list[i].createtime ? msg.data.list[i].createtime : '') + '</td>' +
+			'<td><input type="checkbox" class="val" value="' + msg.data.data[i].company_id + ',' + msg.data.data[i].parent_company_id + '" id="' + msg.data.data[i].company_id + '">' +
+			'<label class="labelFC" for="' + (msg.data.data[i].company_id ? msg.data.data[i].company_id : '') + '"></label></td>' +
+			'<td>' + (msg.data.data[i].company_id ? msg.data.data[i].company_id : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_name ? msg.data.data[i].company_name : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
+			'<td>' + (msg.data.data[i].companyowner ? msg.data.data[i].companyowner : '') + '</td>' +
+			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
+			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
 			'<td>' +
-			'<a class="show-or-hide1" hidden="hidden" onclick="checkdown(' + msg.data.list[i].cid + ')">查看下级</a>' +
-			'<a class="show-or-hide2" hidden="hidden" onclick="showEngineer(' + msg.data.list[i].cid + ')">维修员 </a>' +
-			'<a class="show-or-hide2" hidden="hidden" onclick="showEngineer2()"> 父级维修员</a>' +
+			'<a class="show-or-hide1" hidden="hidden" onclick=checkdown("' + msg.data.data[i].company_id + '")>查看下级</a>' +
+			'<a class="show-or-hide2" hidden="hidden" onclick=showEngineer("' + msg.data.data[i].company_id + '")>维修员 </a>' +
+			'<a class="show-or-hide2" hidden="hidden" onclick=showEngineer2()> 父级维修员</a>' +
 			'</td>' +
 			'</tr>');
-		parent_cid = msg.data.list[i].parent_cid;
+		parent_cid = msg.data.data[i].parent_cid;
 	}
 	reflashpage();
 }
 
-//查看下级公司
 function checkdown(cid) {
+
 	var data = {
-		parent_cid: cid,
-		type: 0
+		parent_company_id: cid,
+		company_type: 1
 	};
 	$.ajax({
 		type: "post",
@@ -291,20 +291,20 @@ function checkdown(cid) {
 function checkdown_request(msg, cid) {
 	parent_cid = cid;
 	$('#company-list').html('');
-	for(var i = 0; i < msg.data.list.length; i++) {
+	for(var i = 0; i < msg.data.data.length; i++) {
 		$('#company-list').append('<tr>' +
-			'<td><input type="checkbox" class="val" value="' + msg.data.list[i].cid + ',' + msg.data.list[i].parent_cid + '" id="' + msg.data.list[i].cid + '">' +
-			'<label class="labelFC" for="' + (msg.data.list[i].cid ? msg.data.list[i].cid : '') + '"></label></td>' +
-			'<td>' + (msg.data.list[i].cid ? msg.data.list[i].cid : '') + '</td>' +
-			'<td>' + (msg.data.list[i].companyname ? msg.data.list[i].companyname : '') + '</td>' +
-			'<td>' + (msg.data.list[i].phone ? msg.data.list[i].phone : '') + '</td>' +
-			'<td>' + (msg.data.list[i].regionName ? msg.data.list[i].regionName : '') + '</td>' +
-			'<td>' + (msg.data.list[i].address ? msg.data.list[i].address : '') + '</td>' +
-			'<td>' + (msg.data.list[i].companyowner ? msg.data.list[i].companyowner : '') + '</td>' +
-			'<td class="' + (msg.data.list[i].status ? 'black' : 'red') + '">' + (msg.data.list[i].status ? '正常' : '停用') + '</td>' +
-			'<td>' + (msg.data.list[i].createtime ? msg.data.list[i].createtime : '') + '</td>' +
+				'<td><input type="checkbox" class="val" value="' + msg.data.data[i].company_id + ',' + msg.data.data[i].parent_company_id + '" id="' + msg.data.data[i].company_id + '">' +
+			'<label class="labelFC" for="' + (msg.data.data[i].company_id ? msg.data.data[i].company_id : '') + '"></label></td>' +
+			'<td>' + (msg.data.data[i].company_id ? msg.data.data[i].company_id : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_name ? msg.data.data[i].company_name : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
+			'<td>' + (msg.data.data[i].companyowner ? msg.data.data[i].companyowner : '') + '</td>' +
+			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
+			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
 			'<td>' +
-			'<a onclick="showEngineer(' + msg.data.list[i].cid + ')">维修员 </a>' +
+			'<a onclick=showEngineer("' + msg.data.data[i].company_id + '")>维修员 </a>' +
 			'<a onclick="showEngineer2()"> 父级维修员</a>' +
 			'</td>' +
 			'</tr>');
@@ -332,7 +332,7 @@ var countdata;
 //获取省数据
 $.ajax({
 	type: "get",
-	url: "/main/webRegion/list",
+	url: "/main/webRegion/list?parent_region_id=1",
 	async: false,
 	success: function(msg) {
 		if(msg.status == "0") {
@@ -340,6 +340,7 @@ $.ajax({
 		}
 		if(msg.status == "1") {
 			provincedata = msg.data;
+		
 		}
 	},
 	error: function() {
@@ -349,7 +350,7 @@ $.ajax({
 //获取市数据
 $.ajax({
 	type: "get",
-	url: "/main/webRegion/list",
+	url: "/main/webRegion/list?parent_region_id=6",
 	async: false,
 	success: function(msg) {
 		if(msg.status == "0") {
@@ -366,7 +367,7 @@ $.ajax({
 //获取区数据
 $.ajax({
 	type: "get",
-	url: "/main/webRegion/list",
+	url: "/main/webRegion/list?parent_region_id=79",
 	async: false,
 	success: function(msg) {
 		if(msg.status == "0") {
@@ -384,14 +385,14 @@ var provinceString = '';
 var cityString = '';
 var countString = '';
 for(var i = 0; i < provincedata.length; i++) {
-	provinceString += '<option value="' + provincedata[i].dmId + '">' + provincedata[i].name + '</option>'; //添加公司省数据
-	$('#search-province').append('<option value="' + provincedata[i].dmId + '">' + provincedata[i].name + '</option>'); //搜索公司省数据
+	provinceString += '<option value="' + provincedata[i].region_id + '">' + provincedata[i].region_name + '</option>'; //添加公司省数据
+	$('#search-province').append('<option value="' + provincedata[i].region_id + '">' + provincedata[i].region_name + '</option>'); //搜索公司省数据
 }
 //搜索表单省数据下钻到市
 $('#search-province').change(function() {
 	if($('#search-province').val() == 6) {
 		for(var i = 0; i < citydata.length; i++) {
-			$('#search-city').append('<option value="' + citydata[i].dmId + '">' + citydata[i].name + '</option>'); //搜索公司市数据
+			$('#search-city').append('<option value="' + citydata[i].region_id + '">' + citydata[i].region_name + '</option>'); //搜索公司市数据
 		}
 	} else {
 		$('#search-city').html('<option value="">选择市</option>');
@@ -402,7 +403,7 @@ $('#search-province').change(function() {
 $('#search-city').change(function() {
 	if($('#search-city').val() == 79) {
 		for(var i = 0; i < countdata.length; i++) {
-			$('#search-count').append('<option value="' + countdata[i].dmId + '">' + countdata[i].name + '</option>'); //搜索公司区县数据
+			$('#search-count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].region_name + '</option>'); //搜索公司区县数据
 		}
 	} else {
 		$('#search-count').html('<option value="">选择区</option>');
@@ -412,7 +413,7 @@ $('#search-city').change(function() {
 function get_city() {
 	if($('#province').val() == 6) {
 		for(var i = 0; i < citydata.length; i++) {
-			$('#city').append('<option value="' + citydata[i].dmId + '">' + citydata[i].name + '</option>'); //添加公司市数据
+			$('#city').append('<option value="' + citydata[i].region_id + '">' + citydata[i].region_name + '</option>'); //添加公司市数据
 		}
 	} else {
 		$('#city').html('<option value="">选择市</option>');
@@ -423,7 +424,7 @@ function get_city() {
 function get_count() {
 	if($('#city').val() == 79) {
 		for(var i = 0; i < countdata.length; i++) {
-			$('#count').append('<option value="' + countdata[i].dmId + '">' + countdata[i].name + '</option>'); //添加公司区县数据
+			$('#count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].name + '</option>'); //添加公司区县数据
 		}
 	} else {
 		$('#count').html('<option value="">选择区</option>');
