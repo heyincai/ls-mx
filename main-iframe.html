@@ -38,7 +38,7 @@
 				<div class="col-md-2 col-sm-4 col-xs-6">
 					<div class="small-box bg-yellow shadow-yellow">
 						<div class="inner">
-							<h3 id="total-order" ng-bind="(datas.orderCount + 2000) || error_info || 0"></h3>
+							<h3 id="total-order" ng-bind="datas.orderCount || error_info || 0"></h3>
 							<p>所有订单</p>
 						</div>
 						<a id="today-order" href="orderAdmin.html" class="small-box-footer" ng-bind="thisMonthOrder || error_info || 0"></a>

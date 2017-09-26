@@ -7,11 +7,15 @@ function initAdmin() {
 		imgSrc = "img/superadmin.png";
 		info_p.text("超级管理员");
 		$("title").text("密修管理总后台");
+		$(".superAd").show();
+		$(".ordinaryAD").hide();
 	}
 	if(rid == 2) {
 		imgSrc = "img/admin.png";
 		info_p.text("管理员");
 		$("title").text("密修管理分后台");
+		$(".superAd").hide();
+		$(".ordinaryAD").show();
 	}
 	$(".img-circle").attr("src", imgSrc);
 }
