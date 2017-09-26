@@ -424,7 +424,7 @@ function get_city() {
 function get_count() {
 	if($('#city').val() == 79) {
 		for(var i = 0; i < countdata.length; i++) {
-			$('#count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].name + '</option>'); //添加公司区县数据
+			$('#count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].region_name + '</option>'); //添加公司区县数据
 		}
 	} else {
 		$('#count').html('<option value="">选择区</option>');
@@ -436,7 +436,6 @@ $('#plus').click(function() {
 		$('#modal-body').html('<div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" placeholder="用户姓名" id="username"><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" placeholder="用户电话" id="userphone"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="password" class="form-control my-control" placeholder="用户密码" id="userpassword"><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" placeholder="公司名称" id="companyname"><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" placeholder="联系电话" id="companyphone"><br></div>' +
 			'<div class="clearfix"></div>' +
@@ -455,7 +454,7 @@ $('#plus').click(function() {
 		$('#modal-body').html('<div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" placeholder="公司名称" id="companyname"><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" placeholder="联系电话" id="companyphone"><br></div>' +
-			'<div class="clearfix"></div>' +
+			'<div class="clearfix"></div>' + 
 			'<div class="col-sm-4"><select onchange="get_city()" class="form-control my-control" id="province"><option value="">选择省</option>' + provinceString + '</select></div>' +
 			'<div class="col-sm-4"><select onchange="get_count()" class="form-control my-control" id="city"><option value="">选择市</option>' + cityString + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">选择区</option>' + countString + '</select><br></div>' +
@@ -464,7 +463,7 @@ $('#plus').click(function() {
 			'<div class="clearfix"></div>' +
 			'</div>');
 		$('#modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>' +
-			'<button type="button" class="btn btn-primary" id="plus-submit" onclick="submit_son(' + parent_cid + ')">提交</button>');
+			'<button type="button" class="btn btn-primary" id="plus-submit" onclick=submit_son("' + parent_cid + '")>提交</button>');
 		$('#primaryModal').modal();
 	} else {
 		alert('出错');
@@ -474,14 +473,16 @@ $('#plus').click(function() {
 function submit_parent() {
 	var username = $('#username').val();
 	var user_phone = $('#userphone').val();
-	var pwd = $('#userpassword').val();
 	var companyname = $('#companyname').val();
 	var phone = $('#companyphone').val();
 	var provinceid = $('#province option:selected').val();
+	var company_province_name = $('#province option:selected').html();
 	var cityid = $('#city option:selected').val();
+	var company_city_name = $('#city option:selected').html();
 	var townid = $('#count option:selected').val();
+	var company_town_name = $('#count option:selected').html();
 	var address = $('#companyaddress').val();
-	var companyowner = $('#companyowner').val();
+/*	var companyowner = $('#companyowner').val();*/
 	if(username.length == 0) {
 		alert('请填写用户姓名');
 		return false;
@@ -490,10 +491,7 @@ function submit_parent() {
 		alert('请填写用户电话');
 		return false;
 	}
-	if(pwd.length == 0) {
-		alert('请填写用户密码');
-		return false;
-	}
+
 	if(companyname.length == 0) {
 		alert('请填写公司名');
 		return false;
@@ -518,23 +516,25 @@ function submit_parent() {
 		alert('请填写公司地址');
 		return false;
 	}
-	if(companyowner.length == 0) {
+	/*if(companyowner.length == 0) {
 		alert('请填写公司法人');
 		return false;
-	}
+	}*/
 	var data = {
-		type: 0,
-		parent_cid: 0,
-		username: username,
+		company_type: 1,
+		parent_company_id: 0,
+		user_realname: username,
 		user_phone: user_phone,
-		pwd: pwd,
-		companyname: companyname,
-		phone: phone,
-		provinceid: provinceid,
-		cityid: cityid,
-		townid: townid,
-		address: address,
-		companyowner: companyowner
+		company_name: companyname,
+		company_phone: phone,
+		company_province_id: provinceid,
+		company_province_name:company_province_name,
+		company_city_id: cityid,
+		company_city_name:company_city_name,
+		company_town_id: townid,
+		company_town_name:company_town_name,
+		company_address: address
+		/*companyowner: companyowner*/
 	};
 	$.ajax({
 		type: "post",
@@ -562,8 +562,11 @@ function submit_son(parent_cid) {
 	var companyname = $('#companyname').val();
 	var phone = $('#companyphone').val();
 	var provinceid = $('#province option:selected').val();
+	var company_province_name = $('#province option:selected').html();
 	var cityid = $('#city option:selected').val();
+	var company_city_name = $('#city option:selected').html();
 	var townid = $('#count option:selected').val();
+	var company_town_name = $('#count option:selected').html();
 	var address = $('#companyaddress').val();
 	var companyowner = $('#companyowner').val();
 	if(companyname.length == 0) {
@@ -590,20 +593,22 @@ function submit_son(parent_cid) {
 		alert('请填写公司地址');
 		return false;
 	}
-	if(companyowner.length == 0) {
+/*	if(companyowner.length == 0) {
 		alert('请填写公司法人');
 		return false;
-	}
+	}*/
 	var data = {
-		type: 0,
-		parent_cid: parent_cid,
-		companyname: companyname,
-		phone: phone,
-		provinceid: provinceid,
-		cityid: cityid,
-		townid: townid,
-		address: address,
-		companyowner: companyowner
+		type: 1,
+		parent_company_id: parent_cid,
+		company_name: companyname,
+		company_phone: phone,
+		company_province_id: provinceid,
+		company_province_name:company_province_name,
+		company_city_id: cityid,
+		company_city_name:company_city_name,
+		company_town_id: townid,
+		company_town_name:company_town_name,
+		company_address: address
 	};
 	$.ajax({
 		type: "post",
@@ -648,7 +653,8 @@ $('#delete').click(function() {
 			}
 		}
 		var data = {
-			cids: cids
+			ids: cids,
+			is_valid: 2
 		};
 		$.ajax({
 			type: "post",
@@ -705,8 +711,8 @@ function banornot(status) {
 			}
 		}
 		var data = {
-			cids: cids,
-			status: status
+			ids: cids,
+			is_valid: status
 		};
 		$.ajax({
 			type: "post",
@@ -751,9 +757,9 @@ $('#edit').click(function() {
 	var cid = all_checked[0].value.split(',')[0];
 	var parent_cid = all_checked[0].value.split(',')[1];
 	var data = {
-		cid: cid,
-		parent_cid: parent_cid,
-		type: 0
+		company_id: cid,
+		company_parent_id:0
+	
 	};
 	$.ajax({
 		type: "post",
@@ -776,54 +782,55 @@ $('#edit').click(function() {
 	if(page_type == 1) {
 		$('#modal-title').html('修改父级公司信息');
 		$('#modal-body').html('<div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + userinfo.username + '" placeholder="用户姓名" id="username"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + userinfo.phone + '" placeholder="用户电话" id="userphone"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="password" class="form-control my-control" value="' + userinfo.pwd + '" placeholder="用户密码" id="userpassword"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.companyname + '" placeholder="公司名称" id="companyname"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + userinfo.user_realname + '" placeholder="用户姓名" id="username"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + userinfo.user_phone + '" placeholder="用户电话" id="userphone"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_name + '" placeholder="公司名称" id="companyname"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.company_phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
 			'<div class="clearfix"></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province"><option value="">选择省</option>' + provinceString + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_count()" id="city"><option value="">选择市</option>' + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">选择区</option>' + '</select><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.companyowner + '" placeholder="公司法人" id="companyowner"></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
+
 			'<div class="clearfix"></div>' +
 			'</div>');
 		$('#modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>' +
-			'<button type="button" class="btn btn-primary" id="plus-submit" onclick="edit_submit_parent(' + cid + ',' + userinfo.uid + ')">提交</button>');
+			'<button type="button" class="btn btn-primary" id="plus-submit" onclick=edit_submit_parent("' + userinfo.user_id + '","' + companyinfo.company_id  + '")>提交</button>');
 		$('#primaryModal').modal();
 	} else if(page_type == 2) {
 		$('#modal-title').html('修改子级公司信息');
 		$('#modal-body').html('<div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.companyname + '" placeholder="公司名称" id="companyname"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_name + '" placeholder="公司名称" id="companyname"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.company_phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
 			'<div class="clearfix"></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province"><option value="">选择省</option>' + provinceString + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_count()" id="city"><option value="">选择市</option>' + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">选择区</option>' + '</select><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.companyowner + '" placeholder="公司法人" id="companyowner"></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
 			'<div class="clearfix"></div>' +
 			'</div>');
 		$('#modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>' +
-			'<button type="button" class="btn btn-primary" id="plus-submit" onclick="edit_submit_son(' + cid + ',' + companyinfo.parent_cid + ')">提交</button>');
+			'<button type="button" class="btn btn-primary" id="plus-submit" onclick=edit_submit_son("' + companyinfo.company_id+ '")>提交</button>');
 		$('#primaryModal').modal();
 	} else {
 		alert('发生错误');
 	}
 });
 
-function edit_submit_parent(cid, uid) {
+function edit_submit_parent(uid, cid) {
 	var username = $('#username').val();
 	var user_phone = $('#userphone').val();
-	var pwd = $('#userpassword').val();
+/*	var pwd = $('#userpassword').val();*/
 	var companyname = $('#companyname').val();
 	var phone = $('#companyphone').val();
 	var provinceid = $('#province option:selected').val();
+	var company_province_name = $('#province option:selected').html();
 	var cityid = $('#city option:selected').val();
+	var company_city_name = $('#city option:selected').html();
 	var townid = $('#count option:selected').val();
+	var company_town_name = $('#count option:selected').html();
 	var address = $('#companyaddress').val();
-	var companyowner = $('#companyowner').val();
+/*	var companyowner = $('#companyowner').val();*/
 	if(username.length == 0) {
 		alert('请填写用户姓名');
 		return false;
@@ -832,10 +839,10 @@ function edit_submit_parent(cid, uid) {
 		alert('请填写用户电话');
 		return false;
 	}
-	if(pwd.length == 0) {
+/*	if(pwd.length == 0) {
 		alert('请填写用户密码');
 		return false;
-	}
+	}*/
 	if(companyname.length == 0) {
 		alert('请填写公司名');
 		return false;
@@ -860,25 +867,27 @@ function edit_submit_parent(cid, uid) {
 		alert('请填写公司地址');
 		return false;
 	}
-	if(companyowner.length == 0) {
+/*	if(companyowner.length == 0) {
 		alert('请填写公司法人');
 		return false;
-	}
+	}*/
 	var data = {
-		cid: cid,
-		uid: uid,
-		type: 0,
-		parent_cid: 0,
-		username: username,
+		user_id: uid,
+		ids:cid,
+		parent_company_id: 0,
+		user_realname: username,
 		user_phone: user_phone,
-		pwd: pwd,
-		companyname: companyname,
-		phone: phone,
-		provinceid: provinceid,
-		cityid: cityid,
-		townid: townid,
-		address: address,
-		companyowner: companyowner
+		company_name: companyname,
+		company_phone: phone,
+		company_province_id: provinceid,
+		company_province_name:company_province_name,
+		company_city_id: cityid,
+		company_city_name:company_city_name,
+		company_town_id: townid,
+		company_town_name:company_town_name,
+		company_address: address,
+		
+
 	};
 	$.ajax({
 		type: "post",
@@ -902,14 +911,16 @@ function edit_submit_parent(cid, uid) {
 	});
 }
 
-function edit_submit_son(cid, parent_cid) {
+function edit_submit_son(cid) {
 	var companyname = $('#companyname').val();
 	var phone = $('#companyphone').val();
 	var provinceid = $('#province option:selected').val();
+	var company_province_name = $('#province option:selected').html();
 	var cityid = $('#city option:selected').val();
+		var company_city_name = $('#city option:selected').html();
 	var townid = $('#count option:selected').val();
+		var company_town_name = $('#count option:selected').html();
 	var address = $('#companyaddress').val();
-	var companyowner = $('#companyowner').val();
 	if(companyname.length == 0) {
 		alert('请填写公司名');
 		return false;
@@ -934,21 +945,17 @@ function edit_submit_son(cid, parent_cid) {
 		alert('请填写公司地址');
 		return false;
 	}
-	if(companyowner.length == 0) {
-		alert('请填写公司法人');
-		return false;
-	}
 	var data = {
-		cid: cid,
-		type: 0,
-		parent_cid: parent_cid,
-		companyname: companyname,
-		phone: phone,
-		provinceid: provinceid,
-		cityid: cityid,
-		townid: townid,
-		address: address,
-		companyowner: companyowner
+		company_id: cid,
+		company_name: companyname,
+		company_phone: phone,
+		company_province_id: provinceid,
+		company_province_name:company_province_name,
+		company_city_id: cityid,
+		company_city_name:company_city_name,
+		company_town_id: townid,
+		company_town_name:company_town_name,
+		company_address: address
 	};
 	$.ajax({
 		type: "post",

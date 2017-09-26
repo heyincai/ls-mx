@@ -11,15 +11,16 @@ $(document).ready(function() {
 });
 
 function index() {
+	appendHtml();
 	$.ajax({
 		type: "post",
-		url: "/back/company/beServiceIndexNew",
+		url: "/main/webCompany/beServiceIndex",
 		async: false,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				primart_request(msg);
 				//给公司列表加分页
 				page({
@@ -62,14 +63,14 @@ $('#search-btn').click(function() {
 	}
 	$.ajax({
 		type: "post",
-		url: "/back/company/beServiceIndexNew",
+		url: "/main/webCompany/beServiceIndex",
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				if(page_type == 1) {
 					primart_request(msg);
 				} else if(page_type == 2) {
@@ -98,14 +99,14 @@ $('#search-btn').click(function() {
 function fuck_the_page(data, select_page) {
 	$.ajax({
 		type: "post",
-		url: "/back/company/beServiceIndexNew",
+	url: "/main/webCompany/beServiceIndex",
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				if(page_type == 1) {
 					primart_request(msg);
 				} else if(page_type == 2) {
@@ -261,30 +262,30 @@ $('#input-button').click(function() {
 function primart_request(msg) {
 	$('#company-list').html('');
 	var ss;
-	for(var i = 0; i < msg.data.list.length; i++) {
+	for(var i = 0; i < msg.data.data.length; i++) {
 		if(sessionStorage.getItem("uid") != "undefined") {
-			ss = '<a onclick="set_to_private(' + msg.data.list[i].cid + ')"> 设为本公司私有用户</a>';
+			ss = '<a onclick="set_to_private(' + msg.data.data[i].company_id + ')"> 设为本公司私有用户</a>';
 		} else {
 			ss = '';
 		}
 		$('#company-list').append('<tr>' +
-			'<td><input type="checkbox" class="val" value="' + msg.data.list[i].cid + ',' + msg.data.list[i].parent_cid + '" id="' + msg.data.list[i].cid + '">' +
-			'<label class="labelFC" for="' + (msg.data.list[i].cid ? msg.data.list[i].cid : '') + '"></label></td>' +
-			'<td>' + (msg.data.list[i].cid ? msg.data.list[i].cid : '') + '</td>' +
-			'<td>' + (msg.data.list[i].companyname ? msg.data.list[i].companyname : '') + '</td>' +
-			'<td>' + (msg.data.list[i].phone ? msg.data.list[i].phone : '') + '</td>' +
-			'<td>' + (msg.data.list[i].regionName ? msg.data.list[i].regionName : '') + '</td>' +
-			'<td>' + (msg.data.list[i].address ? msg.data.list[i].address : '') + '</td>' +
-			'<td>' + (msg.data.list[i].companyowner ? msg.data.list[i].companyowner : '') + '</td>' +
-			'<td class="' + (msg.data.list[i].status ? 'black' : 'red') + '">' + (msg.data.list[i].status ? '正常' : '停用') + '</td>' +
-			'<td>' + (msg.data.list[i].createtime ? msg.data.list[i].createtime : '') + '</td>' +
+				'<td><input type="checkbox" class="val" value="' + msg.data.data[i].company_id + ',' + msg.data.data[i].parent_company_id + '" id="' + msg.data.data[i].company_id + '">' +
+			'<label class="labelFC" for="' + (msg.data.data[i].company_id ? msg.data.data[i].company_id : '') + '"></label></td>' +
+			'<td>' + (msg.data.data[i].company_id ? msg.data.data[i].company_id : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_name ? msg.data.data[i].company_name : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
+				'<td>' + (msg.data.data[i].companyowner ? msg.data.data[i].companyowner : '') + '</td>' +
+						'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
+			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
 			'<td>' +
-			'<a class="show-or-hide1" hidden="hidden" onclick="checkdown(' + msg.data.list[i].cid + ')">查看下级</a>' +
-			'<a class="show-or-hide2" hidden="hidden" onclick="turn_to_userAdmin(' + msg.data.list[i].cid + ')">用户 </a>' +
+		'<a class="show-or-hide1" hidden="hidden" onclick=checkdown("' + msg.data.data[i].company_id + '")>查看下级</a>' +
+			'<a class="show-or-hide2" hidden="hidden" onclick="turn_to_userAdmin(' + msg.data.data[i].company_id + ')">用户 </a>' +
 			ss +
 			'</td>' +
 			'</tr>');
-		parent_cid = msg.data.list[i].parent_cid;
+		parent_cid = msg.data.data[i].parent_company_id;
 	}
 	reflashpage();
 }
@@ -301,10 +302,10 @@ function set_to_private(cid) {
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				alert(msg.info);
 				location.href = "userAdmin.html";
 			}
@@ -314,23 +315,31 @@ function set_to_private(cid) {
 		}
 	});
 }
-
+//子公司隐藏按钮
+function appendHtml(){
+	$(".append .bthidden").hide();
+}
+//子公司加载按钮
+function appendShowHtml(){
+	$(".append .bthidden").show();
+}
 //查看下级公司
 function checkdown(cid) {
+	appendShowHtml()
 	var data = {
-		parent_cid: cid,
-		type: 1
+		parent_company_id: cid,
+		company_type: 2
 	};
 	$.ajax({
 		type: "post",
-		url: "/back/company/beServiceIndexNew",
+		url: "/main/webCompany/serviceIndex",
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				checkdown_request(msg, cid);
 				page_type = 2;
 				//给公司列表加分页
@@ -353,26 +362,26 @@ function checkdown(cid) {
 function checkdown_request(msg, cid) {
 	parent_cid = cid;
 	$('#company-list').html('');
-	for(var i = 0; i < msg.data.list.length; i++) {
+	for(var i = 0; i < msg.data.data.length; i++) {
 		if(sessionStorage.getItem("uid") != "undefined") {
-			ss = '<a onclick="set_to_private(' + msg.data.list[i].cid + ')"> 设为本公司私有用户</a>';
+			ss = '<a onclick="set_to_private(' + msg.data.data[i].cid + ')"> 设为本公司私有用户</a>';
 		} else {
 			ss = '';
 		}
 		$('#company-list').append('<tr>' +
-			'<td><input type="checkbox" class="val" value="' + msg.data.list[i].cid + ',' + msg.data.list[i].parent_cid + '" id="' + msg.data.list[i].cid + '">' +
-			'<label class="labelFC" for="' + (msg.data.list[i].cid ? msg.data.list[i].cid : '') + '"></label></td>' +
-			'<td>' + (msg.data.list[i].cid ? msg.data.list[i].cid : '') + '</td>' +
-			'<td>' + (msg.data.list[i].companyname ? msg.data.list[i].companyname : '') + '</td>' +
-			'<td>' + (msg.data.list[i].phone ? msg.data.list[i].phone : '') + '</td>' +
-			'<td>' + (msg.data.list[i].regionName ? msg.data.list[i].regionName : '') + '</td>' +
-			'<td>' + (msg.data.list[i].address ? msg.data.list[i].address : '') + '</td>' +
-			'<td>' + (msg.data.list[i].companyowner ? msg.data.list[i].companyowner : '') + '</td>' +
-			'<td class="' + (msg.data.list[i].status ? 'black' : 'red') + '">' + (msg.data.list[i].status ? '正常' : '停用') + '</td>' +
-			'<td>' + (msg.data.list[i].createtime ? msg.data.list[i].createtime : '') + '</td>' +
+			'<td><input type="checkbox" class="val" value="' + msg.data.data[i].company_id + ',' + msg.data.data[i].parent_company_id + '" id="' + msg.data.data[i].company_id + '">' +
+			'<label class="labelFC" for="' + (msg.data.data[i].company_id ? msg.data.data[i].company_id : '') + '"></label></td>' +
+			'<td>' + (msg.data.data[i].company_id ? msg.data.data[i].company_id : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_name ? msg.data.data[i].company_name : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
+			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
+			'<td>' + (msg.data.data[i].companyowner ? msg.data.data[i].companyowner : '') + '</td>' +
+			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
+			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
+			
 			'<td>' +
-			'<a onclick="turn_to_userAdmin(' + msg.data.list[i].cid + ')">用户</a>' +
-			ss +
+			'<a onclick=turn_to_userAdmin("' + msg.data.data[i].company_id + '")>用户</a>' +
 			'</td>' +
 			'</tr>');
 	}
@@ -392,13 +401,13 @@ var countdata;
 //获取省数据
 $.ajax({
 	type: "get",
-	url: "/region/list.phone?parentId=1",
+	url: "/main/webRegion/list?parent_region_id=1",
 	async: false,
 	success: function(msg) {
-		if(msg.status == "9999") {
+		if(msg.status == "0") {
 			alert(msg.info);
 		}
-		if(msg.status == "10000") {
+		if(msg.status == "1") {
 			provincedata = msg.data;
 		}
 	},
@@ -409,13 +418,13 @@ $.ajax({
 //获取市数据
 $.ajax({
 	type: "get",
-	url: "/region/list.phone?parentId=6",
+	url: "/main/webRegion/list?parent_region_id=6",
 	async: false,
 	success: function(msg) {
-		if(msg.status == "9999") {
+		if(msg.status == "0") {
 			alert(msg.info);
 		}
-		if(msg.status == "10000") {
+		if(msg.status == "1") {
 			citydata = msg.data;
 		}
 	},
@@ -426,13 +435,13 @@ $.ajax({
 //获取区数据
 $.ajax({
 	type: "get",
-	url: "/region/list.phone?parentId=79",
+	url: "/main/webRegion/list?parent_region_id=79",
 	async: false,
 	success: function(msg) {
-		if(msg.status == "9999") {
+		if(msg.status == "0") {
 			alert(msg.info);
 		}
-		if(msg.status == "10000") {
+		if(msg.status == "1") {
 			countdata = msg.data;
 		}
 	},
@@ -444,14 +453,14 @@ var provinceString = '';
 var cityString = '';
 var countString = '';
 for(var i = 0; i < provincedata.length; i++) {
-	provinceString += '<option value="' + provincedata[i].dmId + '">' + provincedata[i].name + '</option>'; //添加公司省数据
-	$('#search-province').append('<option value="' + provincedata[i].dmId + '">' + provincedata[i].name + '</option>'); //搜索公司省数据
+	provinceString += '<option value="' + provincedata[i].region_id + '">' + provincedata[i].region_name + '</option>'; //添加公司省数据
+	$('#search-province').append('<option value="' + provincedata[i].region_id + '">' + provincedata[i].region_name + '</option>'); //搜索公司省数据
 }
 //搜索表单省数据下钻到市
 $('#search-province').change(function() {
 	if($('#search-province').val() == 6) {
 		for(var i = 0; i < citydata.length; i++) {
-			$('#search-city').append('<option value="' + citydata[i].dmId + '">' + citydata[i].name + '</option>'); //搜索公司市数据
+			$('#search-city').append('<option value="' + citydata[i].region_id + '">' + citydata[i].region_name + '</option>'); //搜索公司市数据
 		}
 	} else {
 		$('#search-city').html('<option value="">选择市</option>');
@@ -462,7 +471,7 @@ $('#search-province').change(function() {
 $('#search-city').change(function() {
 	if($('#search-city').val() == 79) {
 		for(var i = 0; i < countdata.length; i++) {
-			$('#search-count').append('<option value="' + countdata[i].dmId + '">' + countdata[i].name + '</option>'); //搜索公司区县数据
+			$('#search-count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].region_name + '</option>'); //搜索公司区县数据
 		}
 	} else {
 		$('#search-count').html('<option value="">选择区</option>');
@@ -472,7 +481,7 @@ $('#search-city').change(function() {
 function get_city() {
 	if($('#province').val() == 6) {
 		for(var i = 0; i < citydata.length; i++) {
-			$('#city').append('<option value="' + citydata[i].dmId + '">' + citydata[i].name + '</option>'); //添加公司市数据
+			$('#city').append('<option value="' + citydata[i].region_id + '">' + citydata[i].region_name + '</option>'); //添加公司市数据
 		}
 	} else {
 		$('#city').html('<option value="">选择市</option>');
@@ -483,13 +492,13 @@ function get_city() {
 function get_count() {
 	if($('#city').val() == 79) {
 		for(var i = 0; i < countdata.length; i++) {
-			$('#count').append('<option value="' + countdata[i].dmId + '">' + countdata[i].name + '</option>'); //添加公司区县数据
+			$('#count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].region_name + '</option>'); //添加公司区县数据
 		}
 	} else {
 		$('#count').html('<option value="">选择区</option>');
 	}
 }
-$('#plus').click(function() {
+  $(document).on('click', '#plus', function() {
 	if(page_type == 1) {
 		alert('不能添加父级被服务单位');
 		return false;
@@ -525,7 +534,7 @@ $('#plus').click(function() {
 			'<div class="clearfix"></div>' +
 			'</div>');
 		$('#modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>' +
-			'<button type="button" class="btn btn-primary" id="plus-submit" onclick="submit_son(' + parent_cid + ')">提交</button>');
+			'<button type="button" class="btn btn-primary" id="plus-submit" onclick=submit_son("' + parent_cid + '")>提交</button>');
 		$('#primaryModal').modal();
 	} else {
 		alert('出错');
@@ -603,10 +612,10 @@ $('#plus').click(function() {
 //		async: false,
 //		data: data,
 //		success: function(msg) {
-//			if(msg.status == '9999') {
+//			if(msg.status == '0') {
 //				alert(msg.info);
 //			}
-//			if(msg.status == '10000') {
+//			if(msg.status == '1') {
 //				alert(msg.info);
 //				history.go(0);
 //			}
@@ -621,8 +630,11 @@ function submit_son(parent_cid) {
 	var companyname = $('#companyname').val();
 	var phone = $('#companyphone').val();
 	var provinceid = $('#province option:selected').val();
+	var company_province_name = $('#province option:selected').html();
 	var cityid = $('#city option:selected').val();
+	var company_city_name = $('#city option:selected').html();
 	var townid = $('#count option:selected').val();
+	var company_town_name = $('#count option:selected').html();
 	var address = $('#companyaddress').val();
 	var companyowner = $('#companyowner').val();
 	if(companyname.length == 0) {
@@ -649,31 +661,31 @@ function submit_son(parent_cid) {
 		alert('请填写公司地址');
 		return false;
 	}
-	if(companyowner.length == 0) {
-		alert('请填写公司法人');
-		return false;
-	}
+
 	var data = {
-		type: 1,
-		parent_cid: parent_cid,
-		companyname: companyname,
-		phone: phone,
-		provinceid: provinceid,
-		cityid: cityid,
-		townid: townid,
-		address: address,
-		companyowner: companyowner
+		company_type: 2,
+		parent_company_id: parent_cid,
+		company_name: companyname,
+		company_phone: phone,
+		company_province_id: provinceid,
+		company_province_name:company_province_name,
+		company_city_id: cityid,
+		company_city_name:company_city_name,
+		company_town_id: townid,
+		company_town_name:company_town_name,
+		company_address: address
+	
 	};
 	$.ajax({
 		type: "post",
-		url: "/back/company/saveNew",
+		url: "/main/webCompany/save",
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == '9999') {
+			if(msg.status == '0') {
 				alert(msg.info);
 			}
-			if(msg.status == '10000') {
+			if(msg.status == '1') {
 				alert(msg.info);
 				checkdown(parent_cid);
 				$('#select-all').prop("checked", false);
@@ -707,18 +719,19 @@ $('#delete').click(function() {
 			}
 		}
 		var data = {
-			cids: cids
+			ids: cids,
+			is_valid:2
 		};
 		$.ajax({
 			type: "post",
-			url: "/back/company/delNew",
+			url: "/main/webCompany/update",
 			async: false,
 			data: data,
 			success: function(msg) {
-				if(msg.status == "9999") {
+				if(msg.status == "0") {
 					alert(msg.info);
 				}
-				if(msg.status == "10000") {
+				if(msg.status == "1") {
 					alert(msg.info);
 					if(page_type == 1) {
 						index();
@@ -741,10 +754,12 @@ $('#delete').click(function() {
 });
 
 //停用/启用
-$('#ban').click(function() {
+  $(document).on('click', '#ban', function() {
+
 	banornot(0);
 });
-$('#unban').click(function() {
+  $(document).on('click', '#unban', function() {
+
 	banornot(1);
 });
 
@@ -764,19 +779,19 @@ function banornot(status) {
 			}
 		}
 		var data = {
-			cids: cids,
-			status: status
+			ids: cids,
+			is_valid: status
 		};
 		$.ajax({
 			type: "post",
-			url: "/back/company/updateNew",
+			url: "/main/webCompany/update",
 			async: false,
 			data: data,
 			success: function(msg) {
-				if(msg.status == "9999") {
+				if(msg.status == "0") {
 					alert(msg.info);
 				}
-				if(msg.status == "10000") {
+				if(msg.status == "1") {
 					alert(msg.info);
 					if(page_type == 1) {
 						index();
@@ -799,7 +814,7 @@ function banornot(status) {
 }
 
 //编辑公司信息
-$('#edit').click(function() {
+  $(document).on('click', '#edit', function() {
 	var companyinfo;
 	var userinfo;
 	var all_checked = $('.val:checked');
@@ -810,20 +825,19 @@ $('#edit').click(function() {
 	var cid = all_checked[0].value.split(',')[0];
 	var parent_cid = all_checked[0].value.split(',')[1];
 	var data = {
-		cid: cid,
-		parent_cid: parent_cid,
-		type: 0
+		company_id: cid,
+		company_parent_id: 0
 	};
 	$.ajax({
 		type: "post",
-		url: "/back/company/jumpUpdate",
+		url: "/main/webCompany/jumpUpdate",
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				companyinfo = msg.data.company;
 				userinfo = msg.data.user;
 			}
@@ -833,56 +847,58 @@ $('#edit').click(function() {
 		}
 	});
 	if(page_type == 1) {
-		$('#modal-title').html('修改父级公司信息');
+		/*$('#modal-title').html('修改父级公司信息');
 		$('#modal-body').html('<div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + userinfo.username + '" placeholder="用户姓名" id="username"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + userinfo.phone + '" placeholder="用户电话" id="userphone"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="password" class="form-control my-control" value="' + userinfo.pwd + '" placeholder="用户密码" id="userpassword"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.companyname + '" placeholder="公司名称" id="companyname"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + userinfo.user_realname + '" placeholder="用户姓名" id="username"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + userinfo.user_phone + '" placeholder="用户电话" id="userphone"><br></div>' +
+		
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_name + '" placeholder="公司名称" id="companyname"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.company_phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
 			'<div class="clearfix"></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province"><option value="">选择省</option>' + provinceString + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_count()" id="city"><option value="">选择市</option>' + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">选择区</option>' + '</select><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.companyowner + '" placeholder="公司法人" id="companyowner"></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
 			'<div class="clearfix"></div>' +
 			'</div>');
 		$('#modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>' +
-			'<button type="button" class="btn btn-primary" id="plus-submit" onclick="edit_submit_parent(' + cid + ',' + userinfo.uid + ')">提交</button>');
-		$('#primaryModal').modal();
+			'<button type="button" class="btn btn-primary" id="plus-submit" onclick=edit_submit_parent("' + userinfo.user_id + '","' + companyinfo.company_id  + '")>提交</button>');
+		$('#primaryModal').modal();*/
 	} else if(page_type == 2) {
 		$('#modal-title').html('修改子级公司信息');
 		$('#modal-body').html('<div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.companyname + '" placeholder="公司名称" id="companyname"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_name + '" placeholder="公司名称" id="companyname"><br></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.company_phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
 			'<div class="clearfix"></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province"><option value="">选择省</option>' + provinceString + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_count()" id="city"><option value="">选择市</option>' + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">选择区</option>' + '</select><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.companyowner + '" placeholder="公司法人" id="companyowner"></div>' +
+			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
+		
 			'<div class="clearfix"></div>' +
 			'</div>');
 		$('#modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>' +
-			'<button type="button" class="btn btn-primary" id="plus-submit" onclick="edit_submit_son(' + cid + ',' + companyinfo.parent_cid + ')">提交</button>');
+			
+			'<button type="button" class="btn btn-primary" id="plus-submit" onclick=edit_submit_son("' + companyinfo.company_id+ '")>提交</button>');
 		$('#primaryModal').modal();
 	} else {
 		alert('发生错误');
 	}
 });
 
-function edit_submit_parent(cid, uid) {
+function edit_submit_parent(uid,cid) {
 	var username = $('#username').val();
 	var user_phone = $('#userphone').val();
-	var pwd = $('#userpassword').val();
 	var companyname = $('#companyname').val();
 	var phone = $('#companyphone').val();
 	var provinceid = $('#province option:selected').val();
+	var company_province_name = $('#province option:selected').html();
 	var cityid = $('#city option:selected').val();
+	var company_city_name = $('#city option:selected').html();
 	var townid = $('#count option:selected').val();
+	var company_town_name = $('#count option:selected').html();
 	var address = $('#companyaddress').val();
-	var companyowner = $('#companyowner').val();
+
 	if(username.length == 0) {
 		alert('请填写用户姓名');
 		return false;
@@ -891,10 +907,7 @@ function edit_submit_parent(cid, uid) {
 		alert('请填写用户电话');
 		return false;
 	}
-	if(pwd.length == 0) {
-		alert('请填写用户密码');
-		return false;
-	}
+
 	if(companyname.length == 0) {
 		alert('请填写公司名');
 		return false;
@@ -919,36 +932,32 @@ function edit_submit_parent(cid, uid) {
 		alert('请填写公司地址');
 		return false;
 	}
-	if(companyowner.length == 0) {
-		alert('请填写公司法人');
-		return false;
-	}
+	
 	var data = {
-		cid: cid,
-		uid: uid,
-		type: 0,
-		parent_cid: 0,
-		username: username,
+		ids:cid,
+		parent_company_id: 0,
+		user_realname: username,
 		user_phone: user_phone,
-		pwd: pwd,
-		companyname: companyname,
-		phone: phone,
-		provinceid: provinceid,
-		cityid: cityid,
-		townid: townid,
-		address: address,
-		companyowner: companyowner
+		company_name: companyname,
+		company_phone: phone,
+		company_province_id: provinceid,
+		company_province_name:company_province_name,
+		company_city_id: cityid,
+		company_city_name:company_city_name,
+		company_town_id: townid,
+		company_town_name:company_town_name,
+		company_address: address,
 	};
 	$.ajax({
 		type: "post",
-		url: "/back/company/update",
+		url: "/main/webCompany/update",
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == '9999') {
+			if(msg.status == '0') {
 				alert(msg.info);
 			}
-			if(msg.status == '10000') {
+			if(msg.status == '1') {
 				alert(msg.info);
 				index();
 				$('#select-all').prop("checked", false);
@@ -961,12 +970,15 @@ function edit_submit_parent(cid, uid) {
 	});
 }
 
-function edit_submit_son(cid, parent_cid) {
+function edit_submit_son(cid) {
 	var companyname = $('#companyname').val();
 	var phone = $('#companyphone').val();
 	var provinceid = $('#province option:selected').val();
+	var company_province_name = $('#province option:selected').html();
 	var cityid = $('#city option:selected').val();
+	var company_city_name = $('#city option:selected').html();
 	var townid = $('#count option:selected').val();
+	var company_town_name = $('#count option:selected').html();
 	var address = $('#companyaddress').val();
 	var companyowner = $('#companyowner').val();
 	if(companyname.length == 0) {
@@ -993,32 +1005,29 @@ function edit_submit_son(cid, parent_cid) {
 		alert('请填写公司地址');
 		return false;
 	}
-	if(companyowner.length == 0) {
-		alert('请填写公司法人');
-		return false;
-	}
+
 	var data = {
-		cid: cid,
-		type: 1,
-		parent_cid: parent_cid,
-		companyname: companyname,
-		phone: phone,
-		provinceid: provinceid,
-		cityid: cityid,
-		townid: townid,
-		address: address,
-		companyowner: companyowner
+		company_id: cid,
+		company_name: companyname,
+		company_phone: phone,
+		company_province_id: provinceid,
+		company_province_name:company_province_name,
+		company_city_id: cityid,
+		company_city_name:company_city_name,
+		company_town_id: townid,
+		company_town_name:company_town_name,
+		company_address: address
 	};
 	$.ajax({
 		type: "post",
-		url: "/back/company/update",
+		url: "/main/webCompany/update",
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == '9999') {
+			if(msg.status == '0') {
 				alert(msg.info);
 			}
-			if(msg.status == '10000') {
+			if(msg.status == '1') {
 				alert(msg.info);
 				checkdown(parent_cid);
 				$('#select-all').prop("checked", false);
@@ -1032,10 +1041,15 @@ function edit_submit_son(cid, parent_cid) {
 }
 
 //返回
-$('#back').click(function() {
+
+  $(document).on('click', '#back', function() {
+  	
 	index();
 	$('#select-all').prop("checked", false);
 });
+      
+      
+
 
 //新世纪最牛逼的MVC做法
 function reflashpage() {
