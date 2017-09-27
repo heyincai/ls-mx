@@ -1,22 +1,17 @@
 var total_pages;
-
 $(document).ready(function() {
 	var data = {
-		
-
+		clientType:"user",
 	};
 	select_the_page(data, 1);
 })
 //获取列表
 function index() {
-	var data={
-		clientType:user
-	}
+
 	$.ajax({
 		type: "post",
 		url: "/main/webUser/page",
 		async: false,
-		data:data,
 		success: function(msg) {
 			if(msg.status == '0') {
 				alert('msg.info');
@@ -76,9 +71,12 @@ $('#search-btn').click(function() {
 //页码请求通用函数
 function select_the_page(data, select_page) {
 	if(sessionStorage.getItem('cid') != 'undefined' && sessionStorage.getItem('parent_cid') != 'undefined') {
-		data.cid = sessionStorage.getItem('cid');
-		data.parent_cid = sessionStorage.getItem('parent_cid');
+		data.clientType="user",
+		data.user_company_id = sessionStorage.getItem('cid');
+		$(".special-btn:nth-child(3)").show();
+		/*data.parent_company_id = sessionStorage.getItem('parent_cid');*/
 	}
+
 	$.ajax({
 		type: "post",
 		url: "/main/webUser/page",
@@ -131,15 +129,17 @@ function submit_add_user() {
 		return false;
 	}
 	var data = {
-		parent_cid: parent_cid,
-		cid: cid,
-		username: username,
-		realname: realname,
-		pwd: pwd
+		clientType:"user",
+		parent_company_id:parent_cid,
+		user_company_id:cid,
+		user_name:username,
+		user_realname:realname,
+		user_password:$.md5(pwd)
+		
 	};
 	$.ajax({
 		type: "post",
-		url: "/back/company/savePUserNew",
+		url: "/main/webUser/save",
 		async: false,
 		data: data,
 		success: function(msg) {
@@ -195,7 +195,7 @@ $('#pages2').on('click', '.page-contain>a:last-child', function() {
 		return false;
 	}
 	var data = {
-		username: search_input,
+		user_realname: search_input,
 		curPage: select_page
 	};
 	select_the_page(data, select_page);
@@ -215,7 +215,7 @@ $('#input-button').click(function() {
 		return false;
 	}
 	var data = {
-		username: search_input,
+		user_realname: search_input,
 		curPage: select_page
 	};
 	select_the_page(data, select_page);

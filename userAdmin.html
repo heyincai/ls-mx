@@ -41,9 +41,8 @@
 			<div class="row specialStyle" id="speciall-button-group">
 				<button class="btn special-btn" id="ban" title="禁用"><i class="fa fa-ban"></i></button>
 				<button class="btn special-btn" id="unban" title="启用"><i class="fa fa-check"></i></button>
-				<label hidden="hidden" id="checkedLabel">
-					<button class="btn special-btn" onclick="plus_user()" title="添加用户"><i class="fa fa-plus"></i></button>
-				</label>
+			    <button class="btn special-btn" onclick="plus_user()" title="添加用户"  style="display: none;"><i class="fa fa-plus"></i></button>
+				
 			</div>
 
 			<div class="modal fade" id="primaryModal">
@@ -99,7 +98,8 @@
 		</div>
 		<!-- 引入jquery函数库 -->
 		<script src="js/vendor/jquery.min.js"></script>
-
+        <!-- MD5插件 -->
+        <script src="js/jQuery.md5.js"></script>
 		<!-- 引入bootstrap基础插件 -->
 		<script src="js/bootstrap.min.js"></script>
 

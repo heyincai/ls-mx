@@ -276,7 +276,7 @@ function primart_request(msg) {
 			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
-				'<td>' + (msg.data.data[i].companyowner ? msg.data.data[i].companyowner : '') + '</td>' +
+		
 						'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
 			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
 			'<td>' +
@@ -376,7 +376,6 @@ function checkdown_request(msg, cid) {
 			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
-			'<td>' + (msg.data.data[i].companyowner ? msg.data.data[i].companyowner : '') + '</td>' +
 			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
 			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
 			
@@ -530,7 +529,7 @@ function get_count() {
 			'<div class="col-sm-4"><select onchange="get_count()" class="form-control my-control" id="city"><option value="">选择市</option>' + cityString + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">选择区</option>' + countString + '</select><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" placeholder="公司地址" id="companyaddress"><br></div>' +
-			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" placeholder="公司法人" id="companyowner"></div>' +
+		
 			'<div class="clearfix"></div>' +
 			'</div>');
 		$('#modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>' +

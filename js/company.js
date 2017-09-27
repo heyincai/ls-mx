@@ -749,6 +749,11 @@ function banornot(status) {
 $('#edit').click(function() {
 	var companyinfo;
 	var userinfo;
+	if(page_type == 1) {
+		var com_type=1;
+	}else{
+		com_type=null;
+	}
 	var all_checked = $('.val:checked');
 	if(all_checked.length != 1) {
 		alert("请选择且只选择一个公司");
@@ -758,7 +763,8 @@ $('#edit').click(function() {
 	var parent_cid = all_checked[0].value.split(',')[1];
 	var data = {
 		company_id: cid,
-		company_parent_id:0
+		company_parent_id:0,
+		company_type:com_type
 	
 	};
 	$.ajax({
