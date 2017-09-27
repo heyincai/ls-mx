@@ -113,11 +113,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								<span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
 							</a>
 							<ul class="treeview-menu">
-								<c:if test="${sessionScope.user.rid eq '1'}">
-									<li>
-										<a class="ctrl" onclick="changePage('deviceType_admin.html',event)"><i class="fa fa-circle-o"></i> 设备类型</a>
-									</li>
-								</c:if>
+								<li class="superAd">
+									<a class="ctrl" onclick="changePage('deviceType_admin.html',event)"><i class="fa fa-circle-o"></i> 设备类型</a>
+								</li>
 								<li>
 									<a class="ctrl" onclick="changePage('company.html',event)"><i class="fa fa-circle-o"></i> 服务单位类型管理</a>
 								</li>
@@ -139,11 +137,9 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								<li>
 									<a class="ctrl" onclick="changePage('map.html',event)"><i class="fa fa-circle-o"></i> 地图展示</a>
 								</li>
-								<c:if test="${sessionScope.user.rid eq '1'}">
-									<li>
-										<a class="ctrl" onclick="changePage('/region/list?parentId=1',event)"><i class="fa fa-circle-o"></i> 区域管理</a>
-									</li>
-								</c:if>
+								<li class="superAd">
+									<a class="ctrl" onclick="changePage('/region/list?parentId=1',event)"><i class="fa fa-circle-o"></i> 区域管理</a>
+								</li>
 								<li>
 									<a class="ctrl" onclick="changePage('/admin/message.jsp',event)"><i class="fa fa-circle-o"></i> 系统通知</a>
 								</li>
@@ -170,8 +166,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 								</li>
 							</ul>
 						</li>
-						<c:if test="${sessionScope.user.rid eq '2'}">
-							<li class="treeview">
+							<li class="treeview ordinaryAD">
 								<a>
 									<i class="fa fa-envelope"></i> <span>审核通知</span>
 									<span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
@@ -182,7 +177,6 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 									</li>
 								</ul>
 							</li>
-						</c:if>
 						<li class="header"><i class="fa fa-user"></i> 个人管理</li>
 						<!--<li>
 							<a href="#"  onclick="editSys();" class="bg-purple"><i class="fa fa-lock"></i> <span>修改密码</span></a>

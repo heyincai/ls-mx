@@ -2,21 +2,26 @@ var total_pages;
 
 $(document).ready(function() {
 	var data = {
+		
 
 	};
 	select_the_page(data, 1);
 })
 //获取列表
 function index() {
+	var data={
+		clientType:user
+	}
 	$.ajax({
 		type: "post",
-		url: "/back/user/userIndexNew",
+		url: "/main/webUser/page",
 		async: false,
+		data:data,
 		success: function(msg) {
-			if(msg.status == '9999') {
+			if(msg.status == '0') {
 				alert('msg.info');
 			}
-			if(msg.status == '10000') {
+			if(msg.status == '1') {
 				user_list(msg);
 				page({
 					box: 'pages2', //存放分页的容器
@@ -36,17 +41,17 @@ function index() {
 //填充列表
 function user_list(msg) {
 	$('#user-list').html('');
-	for(var i = 0; i < msg.data.list.length; i++) {
+	for(var i = 0; i < msg.data.data.length; i++) {
 		$('#user-list').append('<tr>' +
-			'<td><input type="checkbox" class="val" id="' + msg.data.list[i].uid + '" value="' + msg.data.list[i].uid + '">' +
-			'<label class="labelFC" for="' + msg.data.list[i].uid + '"></label></td>' +
-			'<td>' + msg.data.list[i].uid + '</td>' +
-			'<td>' + (msg.data.list[i].realname ? msg.data.list[i].realname : '') + '</td>' +
-			'<td>' + (msg.data.list[i].phone ? msg.data.list[i].phone : '') + '</td>' +
-			'<td>' + (msg.data.list[i].sex ? '男' : (msg.data.list[i].sex == '0' ? '女' : '')) + '</td>' +
-			'<td>' + (msg.data.list[i].companyname ? msg.data.list[i].companyname : '') + '</td>' +
-			'<td class="' + (msg.data.list[i].status ? 'black' : 'red') + '">' + (msg.data.list[i].status ? '正常' : '停用') + '</td>' +
-			'<td class="show-or-hide2" hidden="hidden"><a onclick="setup_to_private(' + msg.data.list[i].uid + ')">设为私有用户</a><td>' +
+			'<td><input type="checkbox" class="val" id="' + msg.data.data[i].user_id + '" value="' + msg.data.data[i].user_id + '">' +
+			'<label class="labelFC" for="' + msg.data.data[i].user_id + '"></label></td>' +
+			'<td>' + msg.data.data[i].user_id + '</td>' +
+			'<td>' + (msg.data.data[i].user_realname ? msg.data.data[i].user_realname : '') + '</td>' +
+			'<td>' + (msg.data.data[i].user_phone ? msg.data.data[i].user_phone : '') + '</td>' +
+			'<td>' + (msg.data.data[i].user_sex ? '男' : (msg.data.data[i].user_sex == '0' ? '女' : '')) + '</td>' +
+			'<td>' + (msg.data.data[i].company_name_p ? msg.data.data[i].company_name_p : '') + '</td>' +
+			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
+			'<td class="show-or-hide2" hidden="hidden"><a onclick="setup_to_private(' + msg.data.data[i].user_id + ')">设为私有用户</a><td>' +
 			'</tr>');
 	}
 	reflashpage();
@@ -76,14 +81,14 @@ function select_the_page(data, select_page) {
 	}
 	$.ajax({
 		type: "post",
-		url: "/back/user/userIndexNew",
+		url: "/main/webUser/page",
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				user_list(msg);
 				page({
 					box: 'pages2', //存放分页的容器
@@ -138,10 +143,10 @@ function submit_add_user() {
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				alert(msg.info);
 				history.go(0);
 			}
@@ -254,10 +259,10 @@ function banornot(status) {
 			async: false,
 			data: data,
 			success: function(msg) {
-				if(msg.status == "9999") {
+				if(msg.status == "0") {
 					alert(msg.info);
 				}
-				if(msg.status == "10000") {
+				if(msg.status == "1") {
 					alert(msg.info);
 					index();
 					$('#select-all').prop("checked", false);
