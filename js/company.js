@@ -41,7 +41,7 @@ function index() {
 }
 //搜索公司
 $('#search-btn').click(function() {
-	var search_input = $('#search-input').val();
+	var search_input = $.trim($('#search-input').val());
 	var search_province = $('#search-province').val();
 	var search_city = $('#search-city').val();
 	var search_count = $('#search-count').val();
@@ -54,12 +54,12 @@ $('#search-btn').click(function() {
 		alert('出错');
 	}
 	var data = {
-		vague_companyname: search_input,
-		provinceid: search_province,
-		cityid: search_city,
-		townid: search_count,
+		company_name: search_input,
+		company_province_id: search_province,
+		company_city_id: search_city,
+		company_town_id: search_count,
 		type: type,
-		parent_cid: parent_cid
+		parent_company_id: 0
 	}
 	$.ajax({
 		type: "post",
@@ -239,7 +239,6 @@ function primart_request(msg) {
 			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
-			'<td>' + (msg.data.data[i].companyowner ? msg.data.data[i].companyowner : '') + '</td>' +
 			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
 			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
 			'<td>' +
@@ -300,7 +299,7 @@ function checkdown_request(msg, cid) {
 			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
-			'<td>' + (msg.data.data[i].companyowner ? msg.data.data[i].companyowner : '') + '</td>' +
+		
 			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
 			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
 			'<td>' +

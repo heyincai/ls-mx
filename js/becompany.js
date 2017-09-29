@@ -11,6 +11,7 @@ $(document).ready(function() {
 });
 
 function index() {
+	
 	appendHtml();
 	$.ajax({
 		type: "post",
@@ -41,7 +42,7 @@ function index() {
 
 //搜索公司
 $('#search-btn').click(function() {
-	var search_input = $('#search-input').val();
+	var search_input = $.trim(('#search-input').val());
 	var search_province = $('#search-province').val();
 	var search_city = $('#search-city').val();
 	var search_count = $('#search-count').val();
@@ -54,12 +55,12 @@ $('#search-btn').click(function() {
 		alert('出错');
 	}
 	var data = {
-		vague_companyname: search_input,
-		provinceid: search_province,
-		cityid: search_city,
-		townid: search_count,
+		company_name : search_input,
+		company_province_id: search_province,
+		company_city_id: search_city,
+		company_town_id: search_count,
 		type: type,
-		parent_cid: parent_cid
+		parent_company_id: 0
 	}
 	$.ajax({
 		type: "post",
@@ -264,7 +265,7 @@ function primart_request(msg) {
 	var ss;
 	for(var i = 0; i < msg.data.data.length; i++) {
 		if(sessionStorage.getItem("uid") != "undefined") {
-			ss = '<a onclick="set_to_private(' + msg.data.data[i].company_id + ')"> 设为本公司私有用户</a>';
+			ss = '<a onclick=set_to_private("' + msg.data.data[i].company_id + '")> 设为本公司私有用户</a>';
 		} else {
 			ss = '';
 		}
@@ -276,12 +277,11 @@ function primart_request(msg) {
 			'<td>' + (msg.data.data[i].company_phone ? msg.data.data[i].company_phone : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name? msg.data.data[i].company_province_name +'-'+ msg.data.data[i].company_city_name +'-'+ msg.data.data[i].company_town_name : '') + '</td>' +
 			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
-		
-						'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
+		    '<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
 			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
 			'<td>' +
-		'<a class="show-or-hide1" hidden="hidden" onclick=checkdown("' + msg.data.data[i].company_id + '")>查看下级</a>' +
-			'<a class="show-or-hide2" hidden="hidden" onclick="turn_to_userAdmin(' + msg.data.data[i].company_id + ')">用户 </a>' +
+		    '<a class="show-or-hide1" hidden="hidden" onclick=checkdown("' + msg.data.data[i].company_id + '")>查看下级</a>' +
+		    '<a class="show-or-hide2" hidden="hidden" onclick=turn_to_userAdmin("' + msg.data.data[i].company_id + '")>用户 </a>' +
 			ss +
 			'</td>' +
 			'</tr>');
@@ -293,12 +293,12 @@ function primart_request(msg) {
 //设为私有用户
 function set_to_private(cid) {
 	var data = {
-		cid: cid,
-		uid: sessionStorage.getItem("uid")
+		user_company_id: cid,
+		user_id: sessionStorage.getItem("uid")
 	};
 	$.ajax({
 		type: "post",
-		url: "/back/user/privateuser",
+		url: "/main/webUser/privateuser",
 		async: false,
 		data: data,
 		success: function(msg) {
@@ -364,7 +364,7 @@ function checkdown_request(msg, cid) {
 	$('#company-list').html('');
 	for(var i = 0; i < msg.data.data.length; i++) {
 		if(sessionStorage.getItem("uid") != "undefined") {
-			ss = '<a onclick="set_to_private(' + msg.data.data[i].cid + ')"> 设为本公司私有用户</a>';
+			ss = '<a onclick=set_to_private("' + msg.data.data[i].cid + '")> 设为本公司私有用户</a>';
 		} else {
 			ss = '';
 		}
@@ -378,9 +378,11 @@ function checkdown_request(msg, cid) {
 			'<td>' + (msg.data.data[i].company_address ? msg.data.data[i].company_address : '') + '</td>' +
 			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
 			'<td>' + (msg.data.data[i].create_time ? msg.data.data[i].create_time : '') + '</td>' +
-			
 			'<td>' +
-			'<a onclick=turn_to_userAdmin("' + msg.data.data[i].company_id + '")>用户</a>' +
+			'<a class="show-or-hide1" hidden="hidden" onclick="checkdown(' + msg.data.data[i].company_id + ')">查看下级</a>' +
+			'<a class="show-or-hide2" hidden="hidden" onclick="turn_to_userAdmin(' + msg.data.data[i].company_id + ')">用户 </a>' +
+			
+			ss +
 			'</td>' +
 			'</tr>');
 	}

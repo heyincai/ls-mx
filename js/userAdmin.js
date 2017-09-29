@@ -46,7 +46,7 @@ function user_list(msg) {
 			'<td>' + (msg.data.data[i].user_sex ? '男' : (msg.data.data[i].user_sex == '0' ? '女' : '')) + '</td>' +
 			'<td>' + (msg.data.data[i].company_name_p ? msg.data.data[i].company_name_p : '') + '</td>' +
 			'<td class="' + (msg.data.data[i].is_valid ? 'black' : 'red') + '">' + (msg.data.data[i].is_valid ? '正常' : '停用') + '</td>' +
-			'<td class="show-or-hide2" hidden="hidden"><a onclick="setup_to_private(' + msg.data.data[i].user_id + ')">设为私有用户</a><td>' +
+			'<td class= "show-or-hide2" hidden="hidden" ><a onclick=setup_to_private("'+ msg.data.data[i].user_id + '")>设为私有用户</a><td>' +
 			'</tr>');
 	}
 	reflashpage();
