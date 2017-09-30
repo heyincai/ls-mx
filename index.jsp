@@ -212,7 +212,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 		<!-- 引入jquery函数库 -->
 		<script src="js/vendor/jquery.min.js"></script>
-
+	
 		<!-- 引入adminlte.js -->
 		<script src="js/adminlte.min.js"></script>
 

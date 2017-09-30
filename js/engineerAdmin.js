@@ -1,65 +1,60 @@
 //获取公司列表
-function getCompany() {
-	var data = {
-		rid: "4",
-		pageNow: "1",
-		level: "1"
-	};
-	$.ajax({
-		type: "post",
-		url: "/user/pageFix",
-		async: false,
-		data: data,
-		success: function(msg) {
-			var selectHtml = '<select class="my-control form-control" id="eAdmin-select-company">' +
-				'<option value="">所属公司</option>';
-			for(var i = 0; i < msg.data.companies.length; i++) {
-				selectHtml += '<option value="' + msg.data.companies[i].cid + '">' + msg.data.companies[i].companyname + '</option>';
-			}
-			selectHtml += '</select>';
-			$("#eAdmin-select-company-container").html(selectHtml);
-		}
-	});
+function getCompany(msg) {
+	var selectHtml = '<select class="my-control form-control" id="eAdmin-select-company">' +
+		'<option value="">所属公司</option>';
+	for(var i = 0; i < msg.data.companies.company.length; i++) {
+		selectHtml += '<option value="' + msg.data.companies.company[i].company_id + '">' + msg.data.companies.company[i].company_name + '</option>';
+	}
+	selectHtml += '</select>';
+	$("#eAdmin-select-company-container").html(selectHtml);
 }
-getCompany();
 
 var deviceType_info_html = '';
 var url = "";
-var el = null;
-var funName,globalPageNow,globalCountPage,updateUrl,addUrl,globalUid,ePage;
+var level = 1;
+var funName, globalPageNow, globalCountPage, updateUrl, addUrl, globalUid, ePage;
+/*funName用于保存加载列表的各方法的方法名，通过方法名调用本方法从而刷新当前查询条件下的列表。
+ * globalPageNow用于保存各种列表的当前页码
+ * globalCountPage用于保存各种列表的总页数
+ * ePage用于保存维修员列表的页码，以便从下一级列表返回时能显示进入下一级时的页面
+ */
+
 //加载维修员列表
 function getEngineerList(curPage) {
 	var data = {
-		rid: "4",
-		pageNow: curPage
+		curPage: curPage,
+		clientType: "maintenance",
 	};
-	url = "/user/pageFix";
+	url = "/main/webUser/page";
 	var cTd = "单位名称";
-	if(sessionStorage.getItem("parent_engineer") == "cunzai") {
-		cTd = "";
-		url = "/back/company/fixUserNew";
-		data = {
-			curPage: curPage,
-			parent_cid: sessionStorage.getItem("parent_cid")
-		};
-	}
-	if(sessionStorage.getItem("rid") == "1") {
-		data.level = "1";
-	}
-	if(sessionStorage.getItem("cid") != "undefined" && sessionStorage.getItem("parent_cid") != "undefined") {
-		$("#eAdmin-select-company").val(sessionStorage.getItem("parent_cid"));
-		data.cid = sessionStorage.getItem("cid");
+	if(level==1){
+		data.level = 1;
+		level = 0;
 	}
 	if($("#eAdmin-input-key").val() != '') {
-		data.realname = $("#eAdmin-input-key").val();
+		data.user_realname = $("#eAdmin-input-key").val();
 	}
 	if($("#eAdmin-select-company").val() != '') {
-		data.parent_cid = $("#eAdmin-select-company").val();
+		data.company_id = $("#eAdmin-select-company").val();
 	}
 	if($("#eAdmin-select-fixLevel").val() != '') {
 		data.usertypes = $("#eAdmin-select-fixLevel").val();
 	}
-	if(sessionStorage.getItem("oid") != "undefined"){
+	//查看父列表维修员时
+	if(sessionStorage.getItem("parent_engineer") == "cunzai") {
+		data.parent_company_id = sessionStorage.getItem("parent_cid");
+		data.parent_company_name = sessionStorage.getItem("parent_cName");
+		data.company_id = "set_null";
+		delete data.level;
+	}
+	//查看子列表维修员时
+	if(sessionStorage.getItem("cid") != "undefined") {
+		data.company_id = sessionStorage.getItem("cid");
+		data.company_name = sessionStorage.getItem("cName");
+		delete data.level;
+	}
+	//指派维修员时
+	if(sessionStorage.getItem("oid") != "undefined") {
 		data.hasorder = 0;
 	}
 	$.ajax({
@@ -68,92 +63,86 @@ function getEngineerList(curPage) {
 		async: false,
 		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
-				if(sessionStorage.getItem("parent_engineer") == "cunzai") {
-					msg.data.page = msg.data;
-					msg.data.page.data = msg.data.list;
-					msg.data.page.countPage = msg.data.pages;
-					msg.data.page.pageNow = msg.data.curPage;
-				}
-				el = msg.data.page.data;
+			if(msg.status == "1") {
 				$(".special-btn").hide();
 				$(".special-btn:eq(1),.special-btn:eq(2),.special-btn:eq(3),.special-btn:eq(7)").show();
-				if(sessionStorage.getItem("cid") != "undefined" && sessionStorage.getItem("parent_cid") != "undefined") {
+				if(sessionStorage.getItem("cid") != "undefined") {
 					$(".special-btn:eq(5)").show();
 				}
 				if(sessionStorage.getItem("parent_engineer") == "cunzai") {
 					$(".special-btn:eq(5)").show();
 				}
+				if(data.level==1) {
+					getCompany(msg);
+				}
 				funName = "getEngineerList";
-				globalPageNow = msg.data.page.pageNow;
+				globalPageNow = curPage;
 				ePage = globalPageNow;
-				globalCountPage = msg.data.page.countPage;
-				updateUrl = "/user/updateNew";
+				globalCountPage = msg.data.pages;
+				updateUrl = "/main/webUser/update";
 				deviceType_info_html = '<tr><td><input type="checkbox"  onclick="checkAll()" id="select-all"><label class="labelFC" for="select-all"></label></td>' +
 					'<td><b>序号</b></td>' +
 					'<td><b>用户名</b></td>' +
 					'<td><b>电话</b></td>' +
-					'<td><b>身份证</b></td>' +
 					'<td><b>维修员类型</b></td>' +
 					'<td><b>' + cTd + '</b></td>' +
 					'<td><b>状态</b></td>' +
 					'<td><b>操作</b></td>';
 				$(".table.table-striped thead").html(deviceType_info_html);
 				deviceType_info_html = "";
-				for(var i = 0; i < msg.data.page.data.length; i++) {
-					var uid = msg.data.page.data[i].uid;
+				for(var i = 0; i < msg.data.data.length; i++) {
+					var uid = msg.data.data[i].maintenance_id;
 					var tdStyle = '';
 					var status = '正常';
 					var eTypeStyle = '';
 					var eType = "普通维修员";
-					var aText = ' | <a onclick="changeAuthentication(\'' + msg.data.page.data[i].is_secrecy + '_' + uid + '\')">设为认证维修员</a>';
-					if(msg.data.page.data[i].status != 1) {
+					var aText = ' | <a onclick="changeAuthentication(\'' + msg.data.data[i].is_secrecy + '_' + uid + '\')">设为认证维修员</a>';
+					if(msg.data.data[i].is_valid != 1) {
 						status = "停用";
 						tdStyle = ' style="color:red;"';
 					}
-					if(msg.data.page.data[i].is_secrecy == 1) {
+					if(msg.data.data[i].is_secrecy == 1) {
 						eType = "认证维修员";
 						eTypeStyle = ' style="color:red;"';
-						aText = ' | <a onclick="changeAuthentication(\'' + msg.data.page.data[i].is_secrecy + '_' + uid + '\')">设为普通维修员</a>';
+						aText = ' | <a onclick="changeAuthentication(\'' + msg.data.data[i].is_secrecy + '_' + uid + '\')">设为普通维修员</a>';
 					}
-					if(msg.data.page.data[i].is_secrecy == 2) {
+					if(msg.data.data[i].is_secrecy == 2) {
 						eType = "申请认证中";
 						eTypeStyle = ' style="color:green;"';
-						aText = ' | <a onclick="changeAuthentication(\'' + msg.data.page.data[i].is_secrecy + '_' + uid + '\')">前去处理</a>';
+						aText = ' | <a onclick="changeAuthentication(\'' + msg.data.data[i].is_secrecy + '_' + uid + '\')">前去处理</a>';
 					}
 					if(sessionStorage.getItem("rid") == "2") {
 						aText = "";
-						if(msg.data.page.data[i].is_secrecy == 0)
-						aText = ' | <a onclick="changeAuthentication(\'' + msg.data.page.data[i].is_secrecy + '_' + uid + '\')">申请认证</a>';
+						if(msg.data.data[i].is_secrecy == 0)
+							aText = ' | <a onclick="changeAuthentication(\'' + msg.data.data[i].is_secrecy + '_' + uid + '\')">申请认证</a>';
 					}
 					var companyname = "";
-					if(msg.data.page.data[i].companyname) {
-						companyname = msg.data.page.data[i].companyname;
+					if(msg.data.data[i].company_name) {
+						companyname = msg.data.data[i].company_name;
 					}
-					if(msg.data.page.data[i].companyname_p) {
-						companyname = msg.data.page.data[i].companyname_p;
+					if(msg.data.data[i].company_name_p) {
+						companyname = msg.data.data[i].company_name_p;
 					}
-					if(sessionStorage.getItem("oid") != "undefined"){
+					if(sessionStorage.getItem("oid") != "undefined") {
 						aText += ' | <a onclick="assignEngineer(\'' + uid + '\')">指派该维修员</a>'
 					}
 					deviceType_info_html += '<tr>' +
-						'<td><input type="checkbox" value="' + msg.data.page.data[i].username + '_' + uid +
+						'<td><input type="checkbox" value="0_' + uid +
 						'" class="otherCBox" id="checkbox' + i + '">' +
 						'<label class="labelFC" for="checkbox' + i + '"></label></td>' +
 						'<td>' + uid + '</td>' +
-						'<td><a onclick="engineerDetail(' + uid + ')">' + msg.data.page.data[i].realname + '</a></td>' +
-						'<td>' + msg.data.page.data[i].phone + '</td>' +
-						'<td>' + (msg.data.page.data[i].idCard ? msg.data.page.data[i].idCard : "") + '</td>' +
+						'<td><a onclick="engineerDetail(\'' + uid + '\')">' + msg.data.data[i].maintenance_name + '</a></td>' +
+						'<td>' + msg.data.data[i].maintenance_phone + '</td>' +
 						'<td' + eTypeStyle + '>' + eType + '</td>' +
 						'<td>' + companyname + '</td>' +
 						'<td' + tdStyle + '>' + status + '</td>' +
 						'<td>' +
-						'<a onclick="fixRange(1,' + uid + ')">维修范围</a> | ' +
-						'<a onclick="showLocation(' + uid + ')">位置</a> | ' +
-						'<a onclick="watchEvaluate(1,' + uid + ')">查看评价</a>' + aText +
+						'<a onclick="fixRange(1,\'' + uid + '\')">维修范围</a> | ' +
+						'<a onclick="showLocation(\'' + uid + '\')">位置</a> | ' +
+						'<a onclick="watchEvaluate(1,\'' + uid + '\')">查看评价</a>' + aText +
 						'<td>';
 				}
 				$(".table.table-striped tbody").html(deviceType_info_html);
@@ -162,8 +151,8 @@ function getEngineerList(curPage) {
 				page({
 					box: 'pages2', //存放分页的容器
 					href: '#', //跳转连接
-					page: msg.data.page.pageNow, //当前页码 
-					count: msg.data.page.countPage, //总页数
+					page: curPage, //当前页码 
+					count: msg.data.pages, //总页数
 					num: 5, //页面展示的页码个数
 				});
 			}
@@ -198,6 +187,11 @@ function refreshList() {
 	getEngineerList(ePage);
 }
 
+//后退
+function back() {
+
+}
+
 //禁用和启用
 function banOrStarteItem(sta) {
 	var checkedCBox = $(".otherCBox:checked");
@@ -206,12 +200,13 @@ function banOrStarteItem(sta) {
 		return false;
 	}
 	var data = {
-		status: sta
+		clientType: "maintenance",
+		is_valid: sta,
 	};
 	for(var i = 0; i < checkedCBox.length; i++) {
 		ds.push(checkedCBox[i].value.split('_')[1]);
 	}
-	data.uids = ds.join(',');
+	data.user_ids = ds.join(',');
 	$.ajax({
 		type: "post",
 		url: updateUrl,
@@ -240,24 +235,24 @@ function editItem() {
 	}
 	$.ajax({
 		type: "post",
-		url: "/user/findT.json",
+		url: "/main/webUser/findT",
 		async: false,
 		data: {
-			uid: checkedBoxs.val().split("_")[1],
+			user_id: checkedBoxs.val().split("_")[1],
+			clientType: "maintenance",
 			type: "back"
 		},
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				for(var i = 0; i < msg.data.companys.length; i++) {
-					selectCompany += '<option value="' + msg.data.companys[i].cid + '">' + msg.data.companys[i].companyname + '</option>';
+					selectCompany += '<option value="' + msg.data.companys[i].company_id + '">' + msg.data.companys[i].company_name + '</option>';
 				}
 				modal_html = '<div style="text-align: center;">' +
-					'用户名：&nbsp&nbsp&nbsp&nbsp<input type="text" id="engineer-username" value="' + msg.data.realname + '"/><br /><br />' +
-					'身份证：&nbsp&nbsp&nbsp&nbsp<input type="text" id="engineer-idCard" value="' + msg.data.idCard + '"/><br /><br />' +
-					'选择公司：<select style="width: 174px;">' +
+					'用户名：&nbsp&nbsp&nbsp&nbsp<input type="text" id="engineer-username" value="' + msg.data.maintenance_name + '"/><br /><br />' +
+					'选择公司：<select style="width: 174px;" id="selectCompany">' +
 					'<option value="">所属公司</option>' +
 					selectCompany +
 					'</select><br/><br/>' +
@@ -293,23 +288,23 @@ function confirmToEditEng() {
 		return false;
 	}
 	var data = {
-		uid: $(".otherCBox:checked").val().split("_")[1],
-		realname: $("#engineer-username").val(),
-		idCard: $("#engineer-idCard").val(),
+		user_id: $(".otherCBox:checked").val().split("_")[1],
+		user_realname: $("#engineer-username").val(),
+		company_name: $("#selectCompany option:['checked']").text()
 	};
 	if($("#engineer-pwd").val().length != 0) {
-		data.pwd = $("#engineer-pwd").val()
+		data.user_password = $.md5($("#engineer-pwd").val());
 	}
-	if(sessionStorage.getItem("cid") != "undefined" && sessionStorage.getItem("parent_cid") != "undefined") {
-		data.cid = sessionStorage.getItem("cid");
+	if(sessionStorage.getItem("cid") != "undefined") {
+		data.company_id = sessionStorage.getItem("cid");
 	}
 	if(sessionStorage.getItem("parent_engineer") == "cunzai") {
-		data.cid = "set_null";
+		data.company_id = "set_null";
 	}
 	$('#primaryModal').modal("hide");
 	$.ajax({
 		type: "post",
-		url: "/user/updateNew",
+		url: "/main/webUser/update",
 		async: false,
 		data: data,
 		success: function(msg) {
@@ -364,33 +359,22 @@ function confirmToAddEng() {
 		return false;
 	}
 	$('#primaryModal').modal("hide");
-	var data;
-	var addUrl;
-	if(sessionStorage.getItem("cid") != "undefined" && sessionStorage.getItem("parent_cid") != "undefined") {
-		addUrl = "/user/saveNew";
-		data = {
-			rid: "4",
-			parent_cid: sessionStorage.getItem("parent_cid"),
-			cid: sessionStorage.getItem("cid"),
-			username: $("#engineer-username").val(),
-			pwd: $("#engineer-pwd").val(),
-			realname: $("#engineer-realname").val(),
-			idCard: $("#engineer-idCard").val(),
-		};
-	}
-	if(sessionStorage.getItem("parent_engineer") == "cunzai") {
-		addUrl = "/back/company/saveFoxUserNew";
-		data = {
-			parent_cid: sessionStorage.getItem("parent_cid"),
-			username: $("#engineer-username").val(),
-			pwd: $("#engineer-pwd").val(),
-			realname: $("#engineer-realname").val(),
-			idCard: $("#engineer-idCard").val(),
-		};
+	var data = {
+		clientType: "maintenance",
+		user_realname: $("#engineer-realname").val(),
+		user_name: $("#engineer-username").val(),
+		user_idcard: $("#engineer-idCard").val(),
+		user_password: $.md5($("#engineer-pwd").val()),
+		parent_company_id: sessionStorage.getItem("parent_cid"),
+		parent_company_name: sessionStorage.getItem("parent_cName")
+	};
+	if(sessionStorage.getItem("cid") != "undefined") {
+		data.company_id = sessionStorage.getItem("cid");
+		data.company_name = sessionStorage.getItem("cName");
 	}
 	$.ajax({
 		type: "post",
-		url: addUrl,
+		url: "/main/webUser/save",
 		async: false,
 		data: data,
 		success: function(msg) {
@@ -407,19 +391,17 @@ function confirmToAddEng() {
 function changeAuthentication(changeData) {
 	var isS = changeData.split('_')[0];
 	var uid = changeData.split('_')[1];
-	if(sessionStorage.getItem("rid")=='2'){
-		
-	}
 	if(isS == 2) {
 		engineerDetail(uid);
 		refreshList();
 		return false;
 	}
 	var data = {
-		uids: uid,
+		clientType: "maintenance",
+		user_ids: uid,
 		is_secrecy: isS == 0 ? 1 : 0
 	};
-	if(sessionStorage.getItem("rid")=='2'){
+	if(sessionStorage.getItem("rid") == '2') {
 		data.is_secrecy = 2;
 	}
 	$.ajax({
@@ -439,44 +421,54 @@ function changeAuthentication(changeData) {
 
 //查看维修员信息
 function engineerDetail(uid) {
+	var data = {
+		clientType: "maintenance",
+		user_id: uid,
+	};
+//	//查看父列表维修员时
+//	if(sessionStorage.getItem("parent_engineer") == "cunzai") {
+//		data.company_name = sessionStorage.getItem("parent_cName");
+//	}
+//	//查看子列表维修员时
+//	if(sessionStorage.getItem("cid") != "undefined") {
+//		data.company_name = sessionStorage.getItem("cName");
+//	}
 	$.ajax({
 		type: "post",
-		url: "/user/findT.json",
+		url: "/main/webUser/findT",
 		async: false,
-		data: {
-			uid: uid,
-			type: "back"
-		},
+		data: data,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
-				var realname_html = msg.data.realname;
+			if(msg.status == "1") {
+				var realname_html = msg.data.maintenance_name;
+				var cName = msg.data.parent_company_name?msg.data.parent_company_name:'';
 				globalUid = uid;
 				$("#eAdmin-btnRow").hide();
 				if(msg.data.is_secrecy == 2 && sessionStorage.getItem("rid") == 1) {
 					$("#eAdmin-btnRow").show();
 				}
-				if(msg.data.picture.length != 0) {
-					$("#eAdmin-info-picture").attr("src", msg.data.picture);
+				if(msg.data.maintenance_head_image && msg.data.maintenance_head_image.length != 0) {
+					$("#eAdmin-info-picture").attr("src", msg.data.maintenance_head_image);
 				} else {
 					$("#eAdmin-info-picture").attr("src", "./img/defultPicture.png");
 				}
-
-				if(msg.data.sex != "") {
-					realname_html += '<li class="' + (msg.data.sex == 0 ? "fa fa-venus" : "fa fa-mars") +
-						'" style="margin-left: 1rem;color: ' + (msg.data.sex == 0 ? "rgb(242,156,177)" : "rgb(111,200,240)") + ';"></li>';
+				if(msg.data.maintenance_sex != "") {
+					realname_html += '<li class="' + (msg.data.maintenance_sex == 0 ? "fa fa-venus" : "fa fa-mars") +
+						'" style="margin-left: 1rem;color: ' + (msg.data.maintenance_sex == 0 ? "rgb(242,156,177)" : "rgb(111,200,240)") + ';"></li>';
+				}
+				if(sessionStorage.getItem("rid")=="2" && msg.data.company_name){
+					cName = msg.data.company_name;
 				}
 				$("#eAdmin-info-realname").html(realname_html);
-				$("#eAdmin-info-phone").text(msg.data.phone);
-				$("#eAdmin-info-idCard").text(msg.data.idCard);
-				$("#eAdmin-info-isLive").text(msg.data.isLive == 1 ? "是" : "否");
-				$("#eAdmin-info-lastlogintime").text(msg.data.lastlogintime);
-
-				$("#eAdmin-info-companyname").text(msg.data.companyname);
+				$("#eAdmin-info-phone").text(msg.data.maintenance_phone);
+				$("#eAdmin-info-isLive").text(msg.data.is_live == 1 ? "是" : "否");
+				$("#eAdmin-info-lastlogintime").text(msg.data.last_login_time);
+				$("#eAdmin-info-companyname").text(cName);
 				$("#eAdmin-info-is_secrecy").text(msg.data.is_secrecy == 1 ? "是" : "否");
-				$("#eAdmin-info-createtime").text(msg.data.createtime);
+				$("#eAdmin-info-createtime").text(msg.data.create_time);
 				$("#eAdmin-Modal").modal();
 			}
 		},
@@ -490,10 +482,10 @@ function engineerDetail(uid) {
 function Auditing(is_secrecy) {
 	$.ajax({
 		type: "post",
-		url: "/back/company/saveFoxUserNew",
+		url: "/main/webUser/update",
 		async: false,
 		data: {
-			uid: globalUid,
+			user_id: globalUid,
 			is_secrecy: is_secrecy
 		},
 		success: function(msg) {
@@ -502,7 +494,7 @@ function Auditing(is_secrecy) {
 			refreshList();
 		},
 		error: function() {
-			alert("未知的错误发生了。")
+			alert("未知的错误发生了。");
 		}
 	});
 }
@@ -511,24 +503,39 @@ function Auditing(is_secrecy) {
 function fixRange(pageNow, uid) {
 	$.ajax({
 		type: "post",
-		url: "/us/listNew",
+		url: "/main/webUser/userRepair",
 		async: false,
 		data: {
-			uid: uid
+			maintenance_id: uid,
+			curPage: pageNow
 		},
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
+				//给列表加分页
+				page({
+					box: 'pages2', //存放分页的容器
+					href: '#', //跳转连接
+					page: pageNow, //当前页码 
+					count: msg.data.pages, //总页数
+					num: 5, //页面展示的页码个数
+				});
+
+				//隐藏掉不需要的组件
 				$(".headBar").hide();
-				$("#eAdmin-pagesContainer").hide();
 				$(".special-btn").hide();
+				//显示需要的功能按钮
 				$(".special-btn:eq(0),.special-btn:eq(4),.special-btn:eq(6)").show();
+				//保存方法名，通过方法名调用本方法从而刷新当前查询条件下的列表
 				funName = "fixRange";
 				globalUid = uid;
-				addUrl = "/us/addNew";
-				deleteUrl = "/us/deleteNew";
+				globalPageNow = pageNow;
+				globalCountPage = msg.data.pages;
+				addUrl = "/main/webUser/addUserRepair";
+				deleteUrl = "/main/webUser/deleteRepair";
+				//注入表头
 				deviceType_info_html = '<tr><td><input type="checkbox"  onclick="checkAll()" id="select-all"><label class="labelFC" for="select-all"></label></td>' +
 					'<td><b>序号</b></td>' +
 					'<td><b>设备类型</b></td>' +
@@ -537,21 +544,15 @@ function fixRange(pageNow, uid) {
 					'<td><b>创建时间</b></td><tr>';
 				$(".table.table-striped thead").html(deviceType_info_html);
 				deviceType_info_html = "";
-				for(var i = 0; i < msg.data.length; i++) {
-					var tdStyle = '';
-					var status = '正常';
-					if(msg.data[i].status != 1) {
-						status = "停用";
-						tdStyle = ' style="color:red;"';
-					}
+				//注入数据列表
+				for(var i = 0; i < msg.data.data.length; i++) {
 					deviceType_info_html += '<tr>' +
-						'<td><input type="checkbox" value="' + msg.data[i].id + '" class="otherCBox" id="checkbox' + i + '">' +
+						'<td><input type="checkbox" value="' + msg.data.data[i].maintenance_repair_id + '" class="otherCBox" id="checkbox' + i + '">' +
 						'<label class="labelFC" for="checkbox' + i + '"></label></td>' +
-						'<td>' + msg.data[i].id + '</td>' +
-						'<td>' + msg.data[i].devicename + '</td>' +
-						'<td>' + (msg.data[i].repairname == undefined ? "" : msg.data[i].repairname) + '</td>' +
-						'<td' + tdStyle + '>' + status + '</td>' +
-						'<td>' + msg.data[i].createtime + '</td><tr>';
+						'<td>' + msg.data.data[i].maintenance_repair_id + '</td>' +
+						'<td>' + msg.data.data[i].device_type_name + '</td>' +
+						'<td>' + (msg.data.data[i].reqair_name == undefined ? "" : msg.data.data[i].reqair_name) + '</td>' +
+						'<td>' + msg.data.data[i].create_time + '</td><tr>';
 				}
 				$(".table.table-striped tbody").html(deviceType_info_html);
 			}
@@ -567,25 +568,26 @@ var modal_body = $('#modal-body');
 var modal_html = "";
 var mydata = null;
 
-//添加按钮
+//点击添加维修技能按钮时，请求获取下拉列表中的维修范围
 function addItem() {
 	$.ajax({
 		type: "post",
-		url: "/device/all.json",
+		url: "/main/webUser/allType",
 		async: false,
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				if(msg.data.length == 0) {
 					alert("暂无数据。");
 					return false;
 				}
 				var optionsHtml = "";
+				//保存数据段，以便在选择维修范围后列出具体的维修技能
 				mydata = msg.data;
 				for(var i = 0; i < msg.data.length; i++) {
-					optionsHtml += '<option value="' + msg.data[i].id + '">' + msg.data[i].devicename + '</option>';
+					optionsHtml += '<option value="' + msg.data[i].device_type_id + '">' + msg.data[i].device_type_name + '</option>';
 				}
 				modal_title.text("添加维修范围");
 				modal_html = '<div style="text-align: center;">' +
@@ -608,17 +610,17 @@ function addItem() {
 
 }
 
-//选择维修类型
+//选择维修范围后，列出具体维修技能，选择具体维修技能
 function changeFixType() {
 	var fix_Type = $("#fixType");
 	var skillsHtml = '';
 	if(fix_Type.val() != 0 && mydata != null) {
 		for(var i = 0; i < mydata.length; i++) {
-			if(mydata[i].id == fix_Type.val()) {
+			if(mydata[i].device_type_id == fix_Type.val()) {
 				skillsHtml = '<label><input type="checkbox" onclick="checkAllSkills(this)" style="visibility:visible;margin-right:1rem" />全选/不选</label><br/>'
 				for(var j = 0; j < mydata[i].repairs.length; j++) {
-					skillsHtml += '<label><input type="checkbox" value="' + mydata[i].repairs[j].id + '" class="skillsCBox" style="visibility:visible;margin-right:1rem" />' +
-						mydata[i].repairs[j].repairname + '</label><br/>';
+					skillsHtml += '<label><input type="checkbox" value="' + mydata[i].repairs[j].reqair_id + '" class="skillsCBox" style="visibility:visible;margin-right:1rem" />' +
+						mydata[i].repairs[j].reqair_name + '</label><br/>';
 				}
 				break;
 			}
@@ -636,19 +638,22 @@ function checkAllSkills(t) {
 function confirmToAdd() {
 	var fix_Type = $("#fixType");
 	var data = {
-		uid: globalUid,
-		did: fix_Type.val()
+		maintenance_id: globalUid,
+		device_type_id: fix_Type.val()
 	};
+	//选了维修范围后，读取被选中的具体维修技能id
 	if(fix_Type.val() != 0) {
 		var skills_CBox = $(".skillsCBox:checked");
 		if(skills_CBox.length == 0) {
 			return false;
 		} else {
 			var ds = [];
+			//循环读取被选中的checkbox的value值
 			for(var i = 0; i < skills_CBox.length; i++) {
 				ds.push(skills_CBox[i].value);
 			}
-			data.drid = ds.join(',');
+			//id使用逗号隔开作为请求参数
+			data.reqair_ids = ds.join(',');
 		}
 	}
 	$('#primaryModal').modal("hide");
@@ -674,12 +679,11 @@ function deleteItem() {
 	if(checkedCBox.length == 0 || !confirm("确认删除？")) {
 		return false;
 	}
-	var data = {
-		uid: globalUid
-	};
+	var data = {};
 	for(var i = 0; i < checkedCBox.length; i++) {
 		ds.push(checkedCBox[i].value);
 	}
+	//id使用逗号隔开作为请求参数
 	data.ids = ds.join(",");
 	$.ajax({
 		type: "post",
@@ -700,60 +704,56 @@ function deleteItem() {
 function watchEvaluate(pageNow, uid) {
 	$.ajax({
 		type: "post",
-		url: "/oa/pagebycompanyNew",
+		url: "/main/webOrderComment/page",
 		async: false,
 		data: {
-			uid: uid,
-			pageNow: pageNow
+			maintenance_id: uid,
+			curPage: pageNow
 		},
 		success: function(msg) {
-			if(msg.status == "9999") {
+			if(msg.status == "0") {
 				alert(msg.info);
 			}
-			if(msg.status == "10000") {
+			if(msg.status == "1") {
 				//给列表加分页
 				page({
 					box: 'pages2', //存放分页的容器
 					href: '#', //跳转连接
-					page: msg.data.page.pageNow, //当前页码 
-					count: msg.data.page.countPage, //总页数
+					page: pageNow, //当前页码 
+					count: msg.data.pages, //总页数
 					num: 5, //页面展示的页码个数
 				});
+				//隐藏不需要的组件
 				$(".headBar").hide();
 				$(".special-btn").hide();
-				//$("#eAdmin-pagesContainer").hide();
+				//显示需要的功能按钮
 				$(".special-btn:eq(0)").show();
+				//保存方法名，通过方法名调用本方法从而刷新当前查询条件下的列表
 				funName = "watchEvaluate";
 				globalUid = uid;
-				globalPageNow = msg.data.page.pageNow;
-				globalCountPage = msg.data.page.countPage;
+				globalPageNow = pageNow;
+				globalCountPage = msg.data.pages;
 				deviceType_info_html = '<tr><td><input type="checkbox"  onclick="checkAll()" id="select-all"><label class="labelFC" for="select-all"></label></td>' +
 					'<td><b>订单编号</b></td>' +
+					'<td><b>描述内容</b></td>' +
 					'<td><b>专业水平</b></td>' +
 					'<td><b>上门速度</b></td>' +
 					'<td><b>服务态度</b></td>' +
 					'<td><b>来自用户</b></td>' +
-					'<td><b>状态</b></td>' +
 					'<td><b>创建时间</b></td>';
 				$(".table.table-striped thead").html(deviceType_info_html);
 				deviceType_info_html = "";
-				for(var i = 0; i < msg.data.page.data.length; i++) {
+				for(var i = 0; i < msg.data.list.length; i++) {
 					var tdStyle = '';
-					var status = '正常';
-					if(msg.data.page.data[i].status != 1) {
-						status = "停用";
-						tdStyle = ' style="color:red;"';
-					}
-					deviceType_info_html += '<tr>' +
-						'<td><input type="checkbox" class="otherCBox" id="checkbox' + i + '">' +
+					deviceType_info_html += '<tr><td><input type="checkbox" class="otherCBox" id="checkbox' + i + '">' +
 						'<label class="labelFC" for="checkbox' + i + '"></label></td>' +
-						'<td>' + msg.data.page.data[i].oid + '</td>' +
-						'<td>' + msg.data.page.data[i].specialty + '</td>' +
-						'<td>' + msg.data.page.data[i].reply + '</td>' +
-						'<td>' + msg.data.page.data[i].service + '</td>' +
-						'<td>' + msg.data.page.data[i].fromuid + '</td>' +
-						'<td' + tdStyle + '>' + status + '</td>' +
-						'<td>' + msg.data.page.data[i].ctime + '<td>';
+						'<td>' + msg.data.list[i].order_id + '</td>' +
+						'<td>' + msg.data.list[i].comment_content + '</td>' +
+						'<td>' + msg.data.list[i].specialty + '</td>' +
+						'<td>' + msg.data.list[i].expertise_level + '</td>' +
+						'<td>' + msg.data.list[i].service_attitude + '</td>' +
+						'<td>' + msg.data.list[i].comment_id + '</td>' +
+						'<td>' + msg.data.list[i].create_time + '<td></tr>';
 				}
 				$(".table.table-striped tbody").html(deviceType_info_html);
 			}
@@ -765,21 +765,20 @@ function watchEvaluate(pageNow, uid) {
 }
 
 //指派维修员
-function assignEngineer(uid){
+function assignEngineer(uid) {
 	$.ajax({
-		type:"post",
-		url:"/order/updatetype.phone",
-		async:false,
-		data:{
-			oid: sessionStorage.getItem("oid"),
-			uid: uid,
-			ordertype: "2"
+		type: "post",
+		url: "/main/webOrders/accept",
+		async: false,
+		data: {
+			order_id: sessionStorage.getItem("oid"),
+			user_id: uid,
 		},
-		success: function(msg){
+		success: function(msg) {
 			alert(msg.info);
 		},
-		error:function(){
-			alert("未知的错误发生了。");
+		error: function() {
+			alert("指派维修员时，未知的错误发生了。");
 		}
 	});
 }
@@ -788,23 +787,24 @@ function assignEngineer(uid){
 function showLocation(uid) {
 	$.ajax({
 		type: "post",
-		url: "/map/oneNew",
+		url: "/main/webUser/findT",
 		async: false,
 		data: {
-			uid: uid
+			user_id: uid,
+			clientType: "maintenance"
 		},
 		success: function(msg) {
-			if(msg.status == "10000") {
-				if(msg.data.isLive == 0) {
+			if(msg.status == "1") {
+				if(msg.data.is_live == 0) {
 					alert("该维修员不在线。");
 					return false;
 				}
-				sessionStorage.setItem("engineerRealname", msg.data.realname);
+				sessionStorage.setItem("engineerRealname", msg.data.maintenance_name);
 				location.href = "map.html";
 			}
 		},
 		error: function() {
-			alert("未知的错误发生了。");
+			alert("展示维修员位置时，未知的错误发生了。");
 		}
 	});
 }

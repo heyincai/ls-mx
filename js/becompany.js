@@ -871,9 +871,9 @@ function banornot(status) {
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_name + '" placeholder="公司名称" id="companyname"><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.company_phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
 			'<div class="clearfix"></div>' +
-			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province"><option value="">选择省</option>' + provinceString + '</select></div>' +
-			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_count()" id="city"><option value="">选择市</option>' + '</select></div>' +
-			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">选择区</option>' + '</select><br></div>' +
+	'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province"><option value="">' + companyinfo.company_province_name + '</option>' + provinceString + '</select></div>' +
+			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_count()" id="city"><option value="">' + companyinfo.company_city_name + '</option>' + '</select></div>' +
+			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">' + companyinfo.company_town_name + '</option>' + '</select><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
 		
 			'<div class="clearfix"></div>' +
