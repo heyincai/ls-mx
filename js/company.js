@@ -440,7 +440,7 @@ $('#search-city').change(function() {
 
 });
 
-
+//搜索表单省数据下钻县区
 function get_search_count() {
 	district($('#search-city').val());
 	$('#search-count').html("");
@@ -453,6 +453,7 @@ function get_search_count() {
 //添加表单省数据下钻到市
 function get_city() {
 	city($('#province').val());
+
 	$('#city').html("");
 	for(var i = 0; i < citydata.length; i++) {
 		$('#city').append('<option value="' + citydata[i].region_id + '">' + citydata[i].region_name + '</option>'); //添加公司市数据
@@ -848,7 +849,7 @@ $('#edit').click(function() {
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_name + '" placeholder="公司名称" id="companyname"><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.company_phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
 			'<div class="clearfix"></div>' +
-			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province"><option value="' + companyinfo.company_province_id + '"></option>' + provinceString + '</select></div>' +
+			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province">' + provinceString + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_count()" id="city"><option value="">' + companyinfo.company_city_name + '</option>' + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">' + companyinfo.company_town_name + '</option>' + '</select><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_address + '" placeholder="公司地址" id="companyaddress"><br></div>' +

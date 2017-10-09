@@ -410,94 +410,123 @@ $.ajax({
 		}
 		if(msg.status == "1") {
 			provincedata = msg.data;
+
 		}
 	},
 	error: function() {
 		alert('未知错误');
 	}
 });
+
 //获取市数据
-$.ajax({
-	type: "get",
-	url: "/main/webRegion/list?parent_region_id=6",
-	async: false,
-	success: function(msg) {
-		if(msg.status == "0") {
-			alert(msg.info);
+function city(parent_region_id) {
+	$.ajax({
+		type: "get",
+		url: "/main/webRegion/list",
+		async: false,
+		data: {
+			parent_region_id: parent_region_id
+		},
+		success: function(msg) {
+			if(msg.status == "0") {
+				alert(msg.info);
+			}
+			if(msg.status == "1") {
+				citydata = msg.data;
+			}
+		},
+		error: function() {
+			alert('未知错误');
 		}
-		if(msg.status == "1") {
-			citydata = msg.data;
-		}
-	},
-	error: function() {
-		alert('未知错误');
-	}
-});
+	});
+}
 //获取区数据
-$.ajax({
-	type: "get",
-	url: "/main/webRegion/list?parent_region_id=79",
-	async: false,
-	success: function(msg) {
-		if(msg.status == "0") {
-			alert(msg.info);
+function district(parent_region_id) {
+	$.ajax({
+		type: "get",
+		url: "/main/webRegion/list",
+		async: false,
+		data: {
+			parent_region_id: parent_region_id
+		},
+		success: function(msg) {
+			if(msg.status == "0") {
+				alert(msg.info);
+			}
+			if(msg.status == "1") {
+				countdata = msg.data;
+			}
+		},
+		error: function() {
+			alert('未知错误');
 		}
-		if(msg.status == "1") {
-			countdata = msg.data;
-		}
-	},
-	error: function() {
-		alert('未知错误');
-	}
-});
+	});
+}
 var provinceString = '';
 var cityString = '';
 var countString = '';
-for(var i = 0; i < provincedata.length; i++) {
-	provinceString += '<option value="' + provincedata[i].region_id + '">' + provincedata[i].region_name + '</option>'; //添加公司省数据
-	$('#search-province').append('<option value="' + provincedata[i].region_id + '">' + provincedata[i].region_name + '</option>'); //搜索公司省数据
+//循环获取省数据
+function getProv(Prov) {
+	var sel = "";
+	provinceString = "";
+	if(Prov) {
+		for(var i = 0; i < provincedata.length; i++) {
+			if(Prov == provincedata[i].region_id) {
+				sel = "selected";
+			}
+			provinceString += '<option value="' + provincedata[i].region_id + '" ' + sel + '>' + provincedata[i].region_name + '</option>'; //添加公司省数据
+			sel = "";
+		}
+	} else {
+
+		for(var i = 0; i < provincedata.length; i++) {
+			$('#search-province').append('<option value="' + provincedata[i].region_id + '" >' + provincedata[i].region_name + '</option>'); //搜索公司省数据
+		}
+	}
 }
+getProv();
 //搜索表单省数据下钻到市
 $('#search-province').change(function() {
-	if($('#search-province').val() == 6) {
+	city($('#search-province').val());
+    $('#search-city').html("");
 		for(var i = 0; i < citydata.length; i++) {
 			$('#search-city').append('<option value="' + citydata[i].region_id + '">' + citydata[i].region_name + '</option>'); //搜索公司市数据
 		}
-	} else {
-		$('#search-city').html('<option value="">选择市</option>');
-		$('#search-count').html('<option value="">选择区</option>');
-	}
+       get_search_count();
 });
-//搜索表单市数据下钻到区县
+//搜索表单省数据下钻到市
 $('#search-city').change(function() {
-	if($('#search-city').val() == 79) {
-		for(var i = 0; i < countdata.length; i++) {
-			$('#search-count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].region_name + '</option>'); //搜索公司区县数据
-		}
-	} else {
-		$('#search-count').html('<option value="">选择区</option>');
-	}
+	city($('#search-province').val());
+    get_search_count();
+
 });
+//搜索表单省数据下钻县区
+function get_search_count() {
+	district($('#search-city').val());
+	$('#search-count').html("");
+	for(var i = 0; i < countdata.length; i++) {
+		$('#search-count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].region_name + '</option>'); //搜索公司区县数据
+	}
+
+}
 //添加表单省数据下钻到市
 function get_city() {
-	if($('#province').val() == 6) {
-		for(var i = 0; i < citydata.length; i++) {
-			$('#city').append('<option value="' + citydata[i].region_id + '">' + citydata[i].region_name + '</option>'); //添加公司市数据
-		}
-	} else {
-		$('#city').html('<option value="">选择市</option>');
-		$('#count').html('<option value="">选择区</option>');
+	city($('#province').val());
+
+	$('#city').html("");
+	for(var i = 0; i < citydata.length; i++) {
+		$('#city').append('<option value="' + citydata[i].region_id + '">' + citydata[i].region_name + '</option>'); //添加公司市数据
 	}
+	get_count();
 }
 //添加表单市数据下钻到区县
 function get_count() {
-	if($('#city').val() == 79) {
-		for(var i = 0; i < countdata.length; i++) {
-			$('#count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].region_name + '</option>'); //添加公司区县数据
-		}
-	} else {
-		$('#count').html('<option value="">选择区</option>');
+	district($('#city').val());
+	$('#count').html("");
+	for(var i = 0; i < countdata.length; i++) {
+		$('#count').append('<option value="' + countdata[i].region_id + '">' + countdata[i].region_name + '</option>'); //添加公司区县数据
 	}
+
 }
   $(document).on('click', '#plus', function() {
 	if(page_type == 1) {
@@ -847,6 +876,7 @@ function banornot(status) {
 			alert('详情获取失败');
 		}
 	});
+	getProv(companyinfo.company_province_id);
 	if(page_type == 1) {
 		/*$('#modal-title').html('修改父级公司信息');
 		$('#modal-body').html('<div>' +
@@ -871,11 +901,11 @@ function banornot(status) {
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_name + '" placeholder="公司名称" id="companyname"><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="tel" class="form-control my-control" value="' + companyinfo.company_phone + '" placeholder="联系电话" id="companyphone"><br></div>' +
 			'<div class="clearfix"></div>' +
-	'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province"><option value="">' + companyinfo.company_province_name + '</option>' + provinceString + '</select></div>' +
+		'<div class="col-sm-4"><select class="form-control my-control" onchange="get_city()" id="province">' + provinceString + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" onchange="get_count()" id="city"><option value="">' + companyinfo.company_city_name + '</option>' + '</select></div>' +
 			'<div class="col-sm-4"><select class="form-control my-control" id="count"><option value="">' + companyinfo.company_town_name + '</option>' + '</select><br></div>' +
 			'<div class="col-sm-6 col-sm-offset-3"><input type="text" class="form-control my-control" value="' + companyinfo.company_address + '" placeholder="公司地址" id="companyaddress"><br></div>' +
-		
+
 			'<div class="clearfix"></div>' +
 			'</div>');
 		$('#modal-footer').html('<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>' +
